@@ -1,0 +1,54 @@
+---
+/**
+ * One router for every page × language × template.
+ *   /                → home, default language, configured template
+ *   /en/about/       → about, English
+ *   /t/warm/en/      → showcase only: another template
+ */
+import { site, type Lang } from '../site.config';
+import { content, PAGES, TEMPLATES, prefixFor, type Ctx, type PageId } from '../i18n';
+import Base from '../layouts/Base.astro';
+import ClinicHome from '../templates/ClinicHome.astro';
+import EditorialHome from '../templates/EditorialHome.astro';
+import WarmHome from '../templates/WarmHome.astro';
+import About from '../views/About.astro';
+import Services from '../views/Services.astro';
+import Appointment from '../views/Appointment.astro';
+import Accessibility from '../views/Accessibility.astro';
+import Privacy from '../views/Privacy.astro';
+
+export function getStaticPaths() {
+  const templates = site.showcase ? TEMPLATES : [site.template];
+  return templates.flatMap((template) =>
+    site.languages.flatMap((lang) =>
+      PAGES.map((page) => {
+        const parts = [prefixFor(template).replace(/^\//, ''), lang === site.languages[0] ? '' : lang, page === 'home' ? '' : page];
+        const path = parts.filter(Boolean).join('/');
+        return { params: { path: path || undefined }, props: { template, lang, page } };
+      }),
+    ),
+  );
+}
+
+const { template, lang, page } = Astro.props as { template: Ctx['template']; lang: Lang; page: PageId };
+const t = content[lang];
+const ctx: Ctx = { template, lang, page, prefix: prefixFor(template), t };
+const homes = { clinic: ClinicHome, editorial: EditorialHome, warm: WarmHome };
+const Home = homes[template];
+const titles: Record<PageId, string | undefined> = {
+  home: undefined,
+  about: t.ui.nav.about,
+  services: t.ui.nav.services,
+  appointment: t.ui.nav.appointment,
+  accessibility: t.ui.nav.accessibility,
+  privacy: t.ui.nav.privacy,
+};
+---
+<Base ctx={ctx} title={titles[page]}>
+  {page === 'home' && <Home ctx={ctx} />}
+  {page === 'about' && <About ctx={ctx} />}
+  {page === 'services' && <Services ctx={ctx} />}
+  {page === 'appointment' && <Appointment ctx={ctx} />}
+  {page === 'accessibility' && <Accessibility ctx={ctx} />}
+  {page === 'privacy' && <Privacy ctx={ctx} />}
+</Base>

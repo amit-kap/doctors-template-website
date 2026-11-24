@@ -1,0 +1,53 @@
+---
+/**
+ * The page's one live thing: is the clinic open right now, and if not, when does it open?
+ * Computed in the clinic's time zone (Asia/Jerusalem) from site.config.ts → hours.
+ * Without script it shows today's hours as plain text.
+ */
+import { site } from '../site.config';
+import type { Ctx } from '../i18n';
+interface Props { ctx: Ctx; class?: string }
+const { ctx, class: cls } = Astro.props;
+const { t } = ctx;
+const strings = { openNow: t.ui.openNow, closedNow: t.ui.closedNow, until: t.ui.until, opens: t.ui.opens, today: t.ui.today, tomorrow: t.ui.tomorrow, days: t.ui.days };
+---
+<p class:list={['open-now', cls]} data-open-now data-hours={JSON.stringify(site.hours)} data-strings={JSON.stringify(strings)}>
+  <span class="open-dot" aria-hidden="true"></span>
+  <span data-open-text>{t.ui.hours}</span>
+</p>
+<script>
+  type H = { day: number; open: string; close: string };
+  document.querySelectorAll<HTMLElement>('[data-open-now]').forEach((el) => {
+    const hours: H[] = JSON.parse(el.dataset.hours!);
+    const s = JSON.parse(el.dataset.strings!);
+    const parts = Object.fromEntries(
+      new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jerusalem', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+        .formatToParts(new Date()).map((p) => [p.type, p.value]),
+    );
+    const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(parts.weekday);
+    const now = `${parts.hour}:${parts.minute}`;
+    const today = hours.find((h) => h.day === day);
+    const text = el.querySelector('[data-open-text]')!;
+    const time = (v: string) => `⁦${v}⁩`; // keep 08:00 left-to-right inside Hebrew
+    if (today && now >= today.open && now < today.close) {
+      el.dataset.state = 'open';
+      text.textContent = `${s.openNow} · ${s.until} ${time(today.close)}`;
+      return;
+    }
+    el.dataset.state = 'closed';
+    for (let i = 0; i < 7; i++) {
+      const d = (day + i) % 7;
+      const h = hours.find((x) => x.day === d);
+      if (!h || (i === 0 && now >= h.open)) continue;
+      const when = i === 0 ? s.today : i === 1 ? s.tomorrow : s.days[d];
+      text.textContent = `${s.closedNow} · ${s.opens} ${when} ${time(h.open)}`;
+      return;
+    }
+  });
+</script>
+<style>
+  .open-now { display: inline-flex; align-items: center; gap: 0.55em; font-weight: 600; }
+  .open-dot { inline-size: 0.6em; block-size: 0.6em; border-radius: 50%; background: currentColor; flex: none; }
+  .open-now[data-state='open'] .open-dot { background: oklch(55% 0.15 150); }
+  .open-now[data-state='closed'] .open-dot { background: oklch(60% 0.02 250); }
+</style>

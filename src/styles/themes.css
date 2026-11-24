@@ -1,0 +1,82 @@
+/* ==========================================================================
+   Template tokens. One block per template; set by data-template on <html>.
+   Every text/background pair here meets WCAG AA (4.5:1). Check again if you change them.
+   A clinic brand colour can override --primary from site.config.ts → brand.
+   ========================================================================== */
+
+/* A · Clinic — conversion one-pager. Cool, precise, calm. */
+:root[data-template='clinic'] {
+  --bg: oklch(98.6% 0.004 230);
+  --surface: oklch(100% 0 none);
+  --surface-2: oklch(95.6% 0.012 225);
+  --fg: oklch(23% 0.03 245);
+  --muted: oklch(44% 0.025 245);
+  --primary: oklch(43% 0.095 222);
+  --accent: oklch(78% 0.1 190);
+  --radius: 12px;
+  --radius-s: 8px;
+  --font-body: 'IBM Plex Sans Hebrew', system-ui, sans-serif;
+  --font-display: 'IBM Plex Sans Hebrew', system-ui, sans-serif;
+  --display-weight: 600;
+  --display-tracking: -0.015em;
+  --footer-bg: oklch(23% 0.03 245);
+  --footer-fg: oklch(96% 0.01 230);
+}
+
+/* B · Editorial — academic profile. Paper, ink, one deep accent. */
+:root[data-template='editorial'] {
+  --bg: oklch(97.3% 0.011 85);
+  --surface: oklch(99% 0.006 85);
+  --surface-2: oklch(93.6% 0.017 80);
+  --fg: oklch(21% 0.012 60);
+  --muted: oklch(43% 0.016 60);
+  --line: color-mix(in oklch, var(--fg) 18%, transparent);
+  --primary: oklch(40% 0.115 25);
+  --accent: oklch(40% 0.115 25);
+  --radius: 0px;
+  --radius-s: 0px;
+  --btn-radius: 0px;
+  --shadow: none;
+  --font-body: 'Assistant', system-ui, sans-serif;
+  --font-display: 'Frank Ruhl Libre', 'Times New Roman', serif;
+  --display-weight: 500;
+  --display-tracking: -0.01em;
+  --footer-bg: oklch(21% 0.012 60);
+  --footer-fg: oklch(95% 0.012 85);
+}
+
+/* C · Warm — family / paediatric practice. Sand, sage, soft shapes. */
+:root[data-template='warm'] {
+  --bg: oklch(97.4% 0.014 80);
+  --surface: oklch(99.5% 0.006 80);
+  --surface-2: oklch(93.5% 0.03 145);
+  --fg: oklch(26% 0.03 165);
+  --muted: oklch(43% 0.03 165);
+  --primary: oklch(44% 0.08 162);
+  --accent: oklch(70% 0.12 48);
+  --accent-text: oklch(49% 0.13 42);
+  --radius: 22px;
+  --radius-s: 14px;
+  --btn-radius: 999px;
+  --font-body: 'Rubik Variable', system-ui, sans-serif;
+  --font-display: 'Rubik Variable', system-ui, sans-serif;
+  --display-weight: 600;
+  --display-tracking: -0.01em;
+  --footer-bg: oklch(30% 0.045 165);
+  --footer-fg: oklch(96.5% 0.015 80);
+}
+
+/* Template-specific touches on shared components */
+:root[data-template='editorial'] .site-header { background: var(--bg); backdrop-filter: none; }
+:root[data-template='editorial'] .brand-name { font-size: var(--step-2); }
+:root[data-template='editorial'] .nav-list a[aria-current='page'] { box-shadow: none; text-decoration: underline; text-underline-offset: 0.35em; }
+:root[data-template='editorial'] .faq details { border-inline: 0; border-block-start: 0; background: transparent; }
+:root[data-template='editorial'] .card { box-shadow: none; }
+
+:root[data-template='warm'] .site-header { border-block-end: 0; }
+:root[data-template='warm'] .nav-list a { border-radius: 999px; }
+:root[data-template='warm'] .nav-list a[aria-current='page'] { box-shadow: none; background: var(--surface-2); color: var(--fg); }
+:root[data-template='warm'] .chip { background: var(--surface); border: 1px solid var(--line); }
+
+/* Clinic: the utility bar scrolls away, the main header row stays. */
+:root[data-template='clinic'] .site-header { inset-block-start: -2.5rem; }

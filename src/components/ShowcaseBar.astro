@@ -1,0 +1,16 @@
+---
+import { href, prefixFor, TEMPLATES, type Ctx } from '../i18n';
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+---
+<nav class="showcase-bar" aria-label={ctx.t.ui.showcaseLabel}>
+  <span>{ctx.t.ui.showcaseLabel}:</span>
+  {TEMPLATES.map((tpl, i) => (
+    <a
+      href={href({ prefix: prefixFor(tpl), lang: ctx.lang }, ctx.page)}
+      aria-current={tpl === ctx.template ? 'true' : undefined}
+    >
+      {String.fromCharCode(65 + i)} · {ctx.t.templates[tpl]}
+    </a>
+  ))}
+</nav>

@@ -1,0 +1,141 @@
+---
+/**
+ * Appointment request. Minimal data by design (Privacy Protection Law, Amendment 13):
+ * no medical details, consent + notice at the point of collection, no CAPTCHA (honeypot instead).
+ * site.contact.formEndpoint set → POST (Formspree/Web3Forms/own API). Empty → opens an email draft.
+ */
+import { site } from '../site.config';
+import { href, type Ctx } from '../i18n';
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+const a = t.appointment;
+---
+<form
+  class="appt-form"
+  novalidate
+  data-endpoint={site.contact.formEndpoint}
+  data-email={site.contact.email}
+  data-msg-sending={a.sending}
+  data-msg-success={a.success}
+  data-msg-error={a.error}
+  data-msg-summary={a.errorsSummary}
+  data-msg-mail={a.openingMail}
+  aria-labelledby="appt-title"
+>
+  <h2 id="appt-title" class="appt-title">{a.formTitle}</h2>
+  <p class="muted appt-req"><span class="req" aria-hidden="true">*</span> {a.required}</p>
+  <div class="form-status" aria-live="polite" tabindex="-1" data-status></div>
+
+  <div class="field">
+    <label for="f-name">{a.name} <span class="req" aria-hidden="true">*</span></label>
+    <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="f-name-err" data-err={a.errName} />
+    <p class="error" id="f-name-err"></p>
+  </div>
+
+  <div class="field">
+    <label for="f-phone">{a.phone} <span class="req" aria-hidden="true">*</span></label>
+    <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" required pattern="[0-9+\-\s\(\)]{9,}" aria-describedby="f-phone-hint f-phone-err" data-err={a.errPhone} />
+    <p class="hint" id="f-phone-hint">{a.phoneHint}</p>
+    <p class="error" id="f-phone-err"></p>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="f-service">{a.service}</label>
+      <select id="f-service" name="service">
+        {t.services.map((s) => <option>{s.title}</option>)}
+        <option>{a.serviceOther}</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-time">{a.preferred}</label>
+      <select id="f-time" name="preferred">
+        {a.preferredOptions.map((o) => <option>{o}</option>)}
+      </select>
+    </div>
+  </div>
+
+  <p class="hint appt-notice">{a.privacyNotice}</p>
+
+  <div class="field">
+    <div class="check">
+      <input id="f-consent" name="consent" type="checkbox" required aria-describedby="f-consent-err" data-err={a.errConsent} />
+      <label for="f-consent">{a.consent} <a href={href(ctx, 'privacy')}>{t.ui.nav.privacy}</a> <span class="req" aria-hidden="true">*</span></label>
+    </div>
+    <p class="error" id="f-consent-err"></p>
+  </div>
+
+  <!-- Honeypot: hidden from people and assistive tech; bots fill it. -->
+  <div class="hp" aria-hidden="true">
+    <label for="f-hp">Leave empty</label>
+    <input id="f-hp" name="website_hp" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <button class="btn btn-primary appt-submit" type="submit">{a.submit}</button>
+</form>
+
+<style>
+  .appt-form { display: grid; gap: var(--space-l); }
+  .appt-title { font-size: var(--step-2); }
+  .appt-req { font-size: var(--step--1); margin-block-start: calc(var(--space-l) * -0.6); }
+  .field-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--space-l); }
+  .appt-notice { padding: var(--space-s) var(--space-m); background: var(--surface-2); border-radius: var(--radius-s); }
+  .appt-submit { justify-self: start; min-inline-size: 12rem; }
+  .hp { position: absolute; inline-size: 1px; block-size: 1px; overflow: clip; clip-path: inset(50%); }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('.appt-form').forEach((form) => {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const d = form.dataset;
+    const fields = [...form.querySelectorAll<HTMLInputElement>('input[required]')];
+
+    const validate = (el: HTMLInputElement) => {
+      const ok = el.type === 'checkbox' ? el.checked : el.value.trim() !== '' && el.checkValidity();
+      const err = document.getElementById(`${el.id}-err`)!;
+      el.setAttribute('aria-invalid', String(!ok));
+      err.textContent = ok ? '' : el.dataset.err || '';
+      return ok;
+    };
+    fields.forEach((el) => el.addEventListener('blur', () => { if (el.getAttribute('aria-invalid')) validate(el); }));
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const bad = fields.filter((el) => !validate(el));
+      if (bad.length) {
+        status.dataset.kind = 'error';
+        status.textContent = `${d.msgSummary} ${bad.map((el) => el.dataset.err).join(', ')}`;
+        bad[0].focus(); // the field's own error is read with it
+        return;
+      }
+      const data = new FormData(form);
+      if (data.get('website_hp')) { status.dataset.kind = 'success'; status.textContent = d.msgSuccess!; return; } // bot
+      data.delete('website_hp');
+
+      if (!d.endpoint) {
+        const body = [...data.entries()].filter(([k]) => k !== 'consent').map(([k, v]) => `${k}: ${v}`).join('\n');
+        status.dataset.kind = 'success';
+        status.textContent = d.msgMail!;
+        location.href = `mailto:${d.email}?subject=${encodeURIComponent(document.title)}&body=${encodeURIComponent(body)}`;
+        return;
+      }
+      const btn = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+      const label = btn.textContent;
+      btn.disabled = true; btn.textContent = d.msgSending!;
+      try {
+        const res = await fetch(d.endpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        status.dataset.kind = 'success';
+        status.textContent = d.msgSuccess!;
+      } catch {
+        status.dataset.kind = 'error';
+        status.textContent = d.msgError!;
+      } finally {
+        btn.disabled = false; btn.textContent = label;
+        status.focus();
+      }
+    });
+  });
+</script>

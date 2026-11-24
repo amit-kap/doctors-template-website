@@ -1,0 +1,38 @@
+---
+import { site } from '../site.config';
+import { href, whatsappHref, type Ctx } from '../i18n';
+import Icon from './Icon.astro';
+interface Props { ctx: Ctx; title?: string }
+const { ctx, title } = Astro.props;
+const { t } = ctx;
+const wa = whatsappHref();
+const bookHref = site.contact.bookingUrl || href(ctx, 'appointment');
+---
+<section class="cta-band tone-dark" aria-labelledby="cta-h">
+  <div class="wrap cta-row">
+    <div class="stack">
+      <h2 id="cta-h">{title ?? t.appointment.title}</h2>
+      <p>{t.appointment.intro}</p>
+    </div>
+    <div class="cta-actions">
+      {ctx.page !== 'appointment' && <a class="btn btn-on-dark" href={bookHref}><Icon name="calendar" />{t.ui.book}</a>}
+      <a class="btn btn-ghost-dark" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /><span dir="ltr">{site.contact.phone}</span></a>
+      {wa && <a class="btn btn-ghost-dark" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span></a>}
+    </div>
+  </div>
+</section>
+<style>
+  .cta-band { background: var(--primary); color: var(--on-primary); padding-block: var(--section); }
+  .cta-row { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--space-xl); }
+  .cta-row h2 { font-size: var(--step-4); }
+  .cta-row p { opacity: 0.92; max-inline-size: 32em; }
+  .cta-actions { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  .btn-on-dark { background: var(--on-primary); color: var(--primary); }
+  .btn-ghost-dark { border-color: currentColor; color: inherit; }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-on-dark:hover { background: color-mix(in oklch, var(--on-primary), var(--primary) 10%); }
+    .btn-ghost-dark:hover { background: color-mix(in oklch, var(--on-primary) 12%, transparent); }
+  }
+  :global(html[data-a11y-contrast]) .cta-band { border-block: 2px solid white; }
+  :global(html[data-a11y-contrast]) .btn-on-dark { background: var(--primary); color: black; }
+</style>

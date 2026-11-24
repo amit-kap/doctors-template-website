@@ -1,0 +1,19 @@
+---
+import { site } from '../site.config';
+import { formatDate, type Ctx } from '../i18n';
+import PageHead from '../components/PageHead.astro';
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const p = ctx.t.privacy;
+---
+<PageHead title={p.title} />
+<div class="wrap prose section-tight">
+  {p.sections.map((s) => (
+    <>
+      <h2>{s.h}</h2>
+      {s.p.map((x) => <p>{x}</p>)}
+    </>
+  ))}
+  <p>{ctx.t.ui.email}: <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></p>
+  <p class="muted">{p.updated}: <time datetime={site.accessibility.statementUpdated}>{formatDate(site.accessibility.statementUpdated, ctx.lang)}</time></p>
+</div>

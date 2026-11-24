@@ -1,0 +1,67 @@
+---
+/** Accessibility statement – Regulation 35ה. Contents: adjustments, level, tested AT, gaps,
+ *  physical access, contact for requests, coordinator, update date. Data from site.config.ts. */
+import { site } from '../site.config';
+import { formatDate, latin, type Ctx } from '../i18n';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const s = ctx.t.statement;
+const acc = site.accessibility;
+const phys = Object.entries(acc.physical) as [keyof typeof s.physicalLabels, boolean][];
+---
+<PageHead title={s.title}>
+  <p class="statement-badge"><Icon name="access" />{ctx.t.ui.accessibleSiteLong}</p>
+</PageHead>
+<div class="wrap prose statement section-tight">
+  {s.intro.map((p) => <p>{p}</p>)}
+
+  <h2>{s.levelTitle}</h2>
+  <p>{s.level}</p>
+
+  <h2>{s.doneTitle}</h2>
+  <ul>{s.done.map((x) => <li>{x}</li>)}</ul>
+
+  <h2>{s.testedTitle}</h2>
+  <p set:html={latin(s.tested, ctx.lang)} />
+
+  <h2>{s.toolbarTitle}</h2>
+  <p>{s.toolbar}</p>
+
+  <h2>{s.gapsTitle}</h2>
+  <ul>{s.gaps.map((x) => <li>{x}</li>)}</ul>
+
+  <h2>{s.physicalTitle}</h2>
+  <p>{ctx.t.address.street}, {ctx.t.address.city}. {ctx.t.address.notes}</p>
+  <dl class="phys">
+    {phys.map(([k, v]) => (
+      <div><dt>{s.physicalLabels[k]}</dt><dd>{v ? s.yes : s.no}</dd></div>
+    ))}
+  </dl>
+  {phys.filter(([k, v]) => !v && s.physicalAlternatives[k]).length > 0 && (
+    <ul>{phys.filter(([k, v]) => !v && s.physicalAlternatives[k]).map(([k]) => <li>{s.physicalLabels[k]}: {s.physicalAlternatives[k]}</li>)}</ul>
+  )}
+
+  <h2>{s.channelsTitle}</h2>
+  <ul>{s.channels.map((x) => <li>{x}</li>)}</ul>
+
+  <h2>{s.contactTitle}</h2>
+  <p>{s.contactText}</p>
+  <ul>
+    <li>{s.coordinator}</li>
+    <li>{ctx.t.ui.call}: <a href={`tel:${acc.coordinatorPhone.replace(/[^0-9+]/g, '')}`} dir="ltr">{acc.coordinatorPhone}</a></li>
+    <li>{ctx.t.ui.email}: <a href={`mailto:${acc.coordinatorEmail}`}>{acc.coordinatorEmail}</a></li>
+    <li>{ctx.t.ui.address}: {ctx.t.address.street}, {ctx.t.address.city}</li>
+  </ul>
+  <p>{s.responseTime}</p>
+
+  <p class="muted">{s.updatedLabel}: <time datetime={acc.statementUpdated}>{formatDate(acc.statementUpdated, ctx.lang)}</time></p>
+</div>
+<style>
+  .statement-badge { display: inline-flex; align-items: center; gap: 0.6em; padding: 0.5em 1em; border-radius: 999px; background: var(--primary-tint); color: var(--fg); font-weight: 600; }
+  .statement-badge :global(svg) { inline-size: 1.6em; block-size: 1.6em; color: var(--primary); }
+  .phys { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--space-xs); }
+  .phys div { display: flex; justify-content: space-between; gap: var(--space-s); padding: var(--space-s) var(--space-m); background: var(--surface-2); border-radius: var(--radius-s); }
+  .phys dd { margin: 0; font-weight: 700; }
+</style>

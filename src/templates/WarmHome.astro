@@ -1,0 +1,172 @@
+---
+/**
+ * C · WARM — family / paediatric practice (reference: katzclinic.co.il).
+ * First-person tone, arch-shaped portrait, soft tiles, clinic & access info up front.
+ */
+import { site } from '../site.config';
+import { href, whatsappHref, type Ctx } from '../i18n';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import Hours from '../components/Hours.astro';
+import VisitSteps from '../components/VisitSteps.astro';
+import Faq from '../components/Faq.astro';
+import Insurance from '../components/Insurance.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+const d = t.doctor;
+const s = t.statement;
+const wa = whatsappHref();
+const bookHref = site.contact.bookingUrl || href(ctx, 'appointment');
+const icons: Record<string, string> = { ears: 'ear', tubes: 'ear', tonsils: 'child', sleep: 'clock' };
+const phys = (Object.entries(site.accessibility.physical) as [keyof typeof s.physicalLabels, boolean][]).filter(([, v]) => v);
+---
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <p class="hello">{d.fullName} · {d.specialty}</p>
+      <h1>{d.headline}</h1>
+      <p class="lead">{d.intro}</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href={bookHref}><Icon name="calendar" />{t.ui.book}</a>
+        {wa
+          ? <a class="btn btn-quiet btn-lg" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" />{t.ui.whatsappFull}<span class="visually-hidden"> {t.ui.newWindow}</span></a>
+          : <a class="btn btn-quiet btn-lg" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" />{t.ui.callFull}</a>}
+      </div>
+      <ul class="chips" role="list">
+        {d.highlights.map((h) => <li class="chip"><Icon name="check" />{h}</li>)}
+      </ul>
+    </div>
+    <figure class="arch">
+      <span class="arch-sun" aria-hidden="true" data-decor></span>
+      <Img ctx={ctx} name={site.doctor.portrait} width={900} height={1100} eager sizes="(max-width: 56rem) 80vw, 36vw" />
+    </figure>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="svc-h">
+  <div class="wrap">
+    <h2 id="svc-h" class="center-h">{t.ui.nav.services}</h2>
+    <div class="groups">
+      {t.serviceGroups.map((g, gi) => (
+        <section class:list={['group', gi % 2 ? 'g-b' : 'g-a']} aria-labelledby={`wg-${g.id}`}>
+          <h3 id={`wg-${g.id}`}>{g.title}</h3>
+          <ul role="list" class="tiles">
+            {t.services.filter((x) => x.group === g.id).map((x) => (
+              <li class="tile">
+                <span class="tile-icon"><Icon name={icons[x.id] ?? 'steth'} /></span>
+                <div>
+                  <h4><a href={href(ctx, 'services', ctx.lang, `#${x.id}`)}>{x.title}</a></h4>
+                  <p>{x.summary}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="section meet" aria-labelledby="meet-h">
+  <div class="wrap meet-grid">
+    <figure class="meet-img"><Img ctx={ctx} name="consultation" width={1600} height={1067} /></figure>
+    <div class="stack" style="--stack: var(--space-l)">
+      <h2 id="meet-h">{t.ui.aboutMore}</h2>
+      {d.bio.slice(0, 2).map((p) => <p class="meet-p">{p}</p>)}
+      <p class="sign">{d.fullName}</p>
+      <a class="btn btn-outline" href={href(ctx, 'about')}>{t.ui.readMore}<Icon name="arrow" /></a>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="visit-h">
+  <div class="wrap stack" style="--stack: var(--space-xl)">
+    <h2 id="visit-h" class="center-h">{t.ui.visitTitle}</h2>
+    <VisitSteps ctx={ctx} />
+  </div>
+</section>
+
+<section class="section clinic" aria-labelledby="clinic-h">
+  <div class="wrap clinic-grid">
+    <div class="clinic-photo"><Img ctx={ctx} name="interior-reception" width={1600} height={1067} /></div>
+    <div class="clinic-card">
+      <h2 id="clinic-h">{t.ui.directions}</h2>
+      <p class="addr">{t.address.street}, {t.address.city}</p>
+      <ul class="chips" role="list" aria-label={s.physicalTitle}>
+        {phys.map(([k]) => <li class="chip"><Icon name="access" />{s.physicalLabels[k]}</li>)}
+      </ul>
+      <Hours ctx={ctx} compact />
+      <a class="btn btn-primary" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /><span dir="ltr">{site.contact.phone}</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="faq-h">
+  <div class="wrap narrow stack" style="--stack: var(--space-xl)">
+    <h2 id="faq-h" class="center-h">{t.ui.faqTitle}</h2>
+    <Faq ctx={ctx} />
+    <div class="ins card">
+      <h3>{t.ui.insuranceTitle}</h3>
+      <Insurance ctx={ctx} />
+    </div>
+  </div>
+</section>
+
+<CtaBand ctx={ctx} />
+
+<style>
+  .hero { padding-block: clamp(2.5rem, 1rem + 5vw, 6rem) clamp(2rem, 1rem + 3vw, 4rem); }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
+  .hero-text { display: grid; gap: var(--space-l); justify-items: start; }
+  .hello { display: inline-block; padding: 0.35em 1em; border-radius: 999px; background: var(--surface-2); font-weight: 500; font-size: var(--step--1); }
+  .hero h1 { font-size: var(--step-5); }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  .btn-lg { min-block-size: 3.25rem; padding-inline: 1.6em; }
+  .chips :global(svg) { color: var(--primary); }
+
+  .arch { position: relative; padding: var(--space-l); }
+  .arch :global(img) { position: relative; inline-size: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 999px 999px var(--radius) var(--radius); }
+  .arch-sun { position: absolute; inset-block-start: 0; inset-inline-end: 0; inline-size: 40%; aspect-ratio: 1; border-radius: 50%; background: var(--accent); opacity: 0.85; }
+
+  .center-h { text-align: center; margin-block-end: var(--space-xl); }
+  .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--space-l); }
+  .group { padding: clamp(1.25rem, 0.5rem + 2.5vw, 2.25rem); border-radius: calc(var(--radius) * 1.3); }
+  .g-a { background: var(--surface-2); }
+  .g-b { background: color-mix(in oklch, var(--accent) 16%, var(--surface)); }
+  .group > h3 { font-size: var(--step-2); margin-block-end: var(--space-l); }
+  .tiles { display: grid; gap: var(--space-s); }
+  .tile { position: relative; display: flex; gap: var(--space-m); align-items: start; padding: var(--space-m); background: var(--surface); border-radius: var(--radius); }
+  .tile h4 { font-size: var(--step-1); }
+  .tile h4 a { color: var(--fg); text-decoration: none; }
+  .tile h4 a::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+  .tile p { color: var(--muted); font-size: var(--step--1); }
+  .tile:has(a:focus-visible) { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .tile a:focus-visible { outline: none; }
+  .tile-icon { display: grid; place-items: center; flex: none; inline-size: 3rem; block-size: 3rem; border-radius: 50%; background: var(--primary); color: var(--on-primary); }
+  .tile-icon :global(svg) { inline-size: 1.4rem; block-size: 1.4rem; }
+  @media (hover: hover) and (pointer: fine) { .tile:hover h4 a { color: var(--primary); text-decoration: underline; } }
+
+  .meet-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
+  .meet-img :global(img) { inline-size: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 50% 50% var(--radius) 50%; }
+  .meet-p { font-size: var(--step-1); line-height: 1.6; }
+  .sign { font-weight: 600; color: var(--accent-text); font-size: var(--step-1); }
+  .meet .btn { justify-self: start; }
+
+  .clinic-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; }
+  .clinic-photo :global(img) { inline-size: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: calc(var(--radius) * 1.3); }
+  .clinic-card { display: grid; gap: var(--space-m); padding: clamp(1.25rem, 0.5rem + 3vw, 2.5rem); background: var(--surface); border-radius: calc(var(--radius) * 1.3); box-shadow: var(--shadow); margin-inline-start: calc(-1 * clamp(2rem, 1rem + 4vw, 5rem)); position: relative; }
+  .addr { font-size: var(--step-1); font-weight: 500; }
+  .clinic-card .btn { justify-self: start; }
+
+  .narrow { max-inline-size: 48rem; }
+  .ins h3 { margin-block-end: var(--space-s); }
+
+  @media (max-width: 56rem) {
+    .hero-grid, .meet-grid, .clinic-grid { grid-template-columns: 1fr; }
+    .arch { max-inline-size: 24rem; justify-self: center; }
+    .clinic-card { margin-inline-start: var(--space-m); margin-inline-end: var(--space-m); margin-block-start: -3rem; }
+  }
+</style>

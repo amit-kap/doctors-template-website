@@ -1,0 +1,41 @@
+---
+import type { Ctx } from '../i18n';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import Insurance from '../components/Insurance.astro';
+import CtaBand from '../components/CtaBand.astro';
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+---
+<PageHead eyebrow={t.doctor.specialty} title={t.ui.nav.services} lead={t.doctor.intro} />
+{t.serviceGroups.map((g) => (
+  <section class="wrap section-tight" aria-labelledby={`g-${g.id}`}>
+    <h2 id={`g-${g.id}`} class="group-h">{g.title}</h2>
+    <ul class="svc-grid" role="list">
+      {t.services.filter((s) => s.group === g.id).map((s) => (
+        <li class="card svc" id={s.id}>
+          <h3>{s.title}</h3>
+          <p class="muted">{s.summary}</p>
+          <ul class="svc-details" role="list">
+            {s.details.map((x) => <li><Icon name="check" />{x}</li>)}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  </section>
+))}
+<section class="wrap section-tight" aria-labelledby="ins-h">
+  <h2 id="ins-h" class="group-h">{t.ui.insuranceTitle}</h2>
+  <Insurance ctx={ctx} />
+</section>
+<div class="section-tight"></div>
+<CtaBand ctx={ctx} />
+<style>
+  .group-h { font-size: var(--step-2); margin-block-end: var(--space-l); }
+  .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); gap: var(--space-m); }
+  .svc { display: grid; gap: var(--space-s); align-content: start; }
+  .svc-details { display: grid; gap: var(--space-2xs); margin-block-start: var(--space-xs); font-size: var(--step--1); }
+  .svc-details li { display: flex; gap: 0.5em; align-items: baseline; }
+  .svc-details :global(svg) { inline-size: 1em; block-size: 1em; flex: none; color: var(--primary); translate: 0 0.15em; }
+</style>

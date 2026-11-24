@@ -1,0 +1,20 @@
+---
+import { site } from '../site.config';
+import { whatsappHref, type Ctx } from '../i18n';
+import Icon from './Icon.astro';
+interface Props { ctx: Ctx }
+const { t } = Astro.props.ctx;
+const wa = whatsappHref();
+---
+<div class="fab-contact" role="group" aria-label={t.appointment.title}>
+  {wa && (
+    <a class="fab-wa" href={wa} target="_blank" rel="noopener">
+      <Icon name="whatsapp" />
+      <span class="visually-hidden">{t.ui.whatsappFull} {t.ui.newWindow}</span>
+    </a>
+  )}
+  <a class="fab-call" href={`tel:${site.contact.phoneHref}`}>
+    <Icon name="phone" />
+    <span class="visually-hidden">{t.ui.callFull}</span>
+  </a>
+</div>

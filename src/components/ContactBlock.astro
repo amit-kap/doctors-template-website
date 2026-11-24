@@ -1,0 +1,43 @@
+---
+import { site } from '../site.config';
+import { whatsappHref, mapsHref, wazeHref, type Ctx } from '../i18n';
+import Icon from './Icon.astro';
+import Hours from './Hours.astro';
+interface Props { ctx: Ctx; headingLevel?: 'h2' | 'h3' }
+const { ctx, headingLevel = 'h3' } = Astro.props;
+const { t } = ctx;
+const H = headingLevel;
+const wa = whatsappHref();
+---
+<div class="contact-block">
+  <div class="cb-col">
+    <H class="cb-h">{t.ui.address}</H>
+    <p class="cb-address">{t.address.street}<br />{t.address.city}</p>
+    <p class="muted">{t.address.notes}</p>
+    <div class="cb-links">
+      <a class="btn btn-quiet" href={wazeHref()} target="_blank" rel="noopener"><Icon name="pin" />{t.ui.openWaze}<span class="visually-hidden"> {t.ui.newWindow}</span></a>
+      <a class="btn btn-quiet" href={mapsHref()} target="_blank" rel="noopener"><Icon name="external" />{t.ui.openMaps}<span class="visually-hidden"> {t.ui.newWindow}</span></a>
+    </div>
+  </div>
+  <div class="cb-col">
+    <H class="cb-h">{t.ui.hours}</H>
+    <Hours ctx={ctx} />
+  </div>
+  <div class="cb-col">
+    <H class="cb-h">{t.appointment.title}</H>
+    <div class="cb-actions">
+      <a class="btn btn-primary" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" />{t.ui.call} <span dir="ltr">{site.contact.phone}</span></a>
+      {wa && <a class="btn btn-outline" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" />{t.ui.whatsappFull}<span class="visually-hidden"> {t.ui.newWindow}</span></a>}
+      <a class="btn btn-quiet" href={`mailto:${site.contact.email}`}><Icon name="mail" />{site.contact.email}</a>
+    </div>
+  </div>
+</div>
+<style>
+  .contact-block { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: var(--space-2xl) var(--space-xl); }
+  .cb-col { display: grid; gap: var(--space-s); align-content: start; }
+  .cb-h { font-size: var(--step-1); }
+  .cb-address { font-size: var(--step-1); line-height: 1.4; }
+  .cb-links, .cb-actions { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  .cb-actions { flex-direction: column; align-items: stretch; }
+  .cb-actions .btn { justify-content: flex-start; white-space: normal; }
+</style>

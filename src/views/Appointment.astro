@@ -1,0 +1,40 @@
+---
+import { site } from '../site.config';
+import type { Ctx } from '../i18n';
+import PageHead from '../components/PageHead.astro';
+import AppointmentForm from '../components/AppointmentForm.astro';
+import ContactBlock from '../components/ContactBlock.astro';
+import Faq from '../components/Faq.astro';
+import Icon from '../components/Icon.astro';
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+const a = t.appointment;
+---
+<PageHead title={a.title} lead={a.intro} />
+<section class="wrap appt-grid" aria-label={a.title}>
+  <div class="card appt-card">
+    {site.contact.bookingUrl ? (
+      <div class="stack">
+        <h2>{a.externalTitle}</h2>
+        <a class="btn btn-primary" href={site.contact.bookingUrl} target="_blank" rel="noopener">
+          <Icon name="calendar" />{a.externalText}<span class="visually-hidden"> {t.ui.newWindow}</span>
+        </a>
+      </div>
+    ) : <AppointmentForm ctx={ctx} />}
+  </div>
+  <div class="appt-side">
+    <ContactBlock ctx={ctx} headingLevel="h2" />
+  </div>
+</section>
+<section class="wrap section" aria-labelledby="faq-h">
+  <h2 id="faq-h" class="faq-h">{t.ui.faqTitle}</h2>
+  <Faq ctx={ctx} />
+</section>
+<style>
+  .appt-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-2xl); align-items: start; }
+  .appt-card { padding: clamp(1.25rem, 0.5rem + 3vw, 2.5rem); }
+  .appt-side :global(.contact-block) { grid-template-columns: 1fr; }
+  .faq-h { margin-block-end: var(--space-l); }
+  @media (max-width: 56rem) { .appt-grid { grid-template-columns: 1fr; } }
+</style>

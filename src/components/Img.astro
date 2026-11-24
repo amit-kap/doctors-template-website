@@ -1,0 +1,24 @@
+---
+/** Image from site.config.ts → images, with alt text from the current language file. */
+import { img, type Ctx } from '../i18n';
+interface Props {
+  ctx: Ctx; name: string; class?: string; width?: number; height?: number;
+  eager?: boolean; decorative?: boolean; sizes?: string;
+}
+const { ctx, name, class: cls, width = 1600, height = 1067, eager, decorative, sizes } = Astro.props;
+const image = img(name);
+const alt = decorative ? '' : ctx.t.images[name] ?? '';
+---
+{image && (
+  <img
+    class={cls}
+    src={image.src}
+    alt={alt}
+    width={width}
+    height={height}
+    sizes={sizes}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : undefined}
+    decoding="async"
+  />
+)}

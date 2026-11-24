@@ -1,0 +1,37 @@
+---
+import type { Ctx } from '../i18n';
+import PageHead from '../components/PageHead.astro';
+import Img from '../components/Img.astro';
+import License from '../components/License.astro';
+import Credentials from '../components/Credentials.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../site.config';
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+const d = t.doctor;
+---
+<PageHead eyebrow={d.specialty} title={d.fullName} lead={d.shortBio} />
+<section class="wrap about-grid section-tight" aria-label={t.ui.nav.about}>
+  <figure class="about-photo">
+    <Img ctx={ctx} name={site.doctor.portrait} width={900} height={1100} eager />
+  </figure>
+  <div class="stack about-text" style="--stack: var(--space-l)">
+    {d.bio.map((p) => <p>{p}</p>)}
+    <blockquote class="about-quote"><p>{d.philosophy}</p></blockquote>
+    <p><strong>{t.ui.languagesSpoken}:</strong> {d.languages.join(', ')}</p>
+    <License ctx={ctx} />
+  </div>
+</section>
+<section class="wrap section" aria-labelledby="creds-h">
+  <h2 id="creds-h" class="visually-hidden">{t.ui.credentialsTitle}</h2>
+  <Credentials ctx={ctx} variant={ctx.template === 'editorial' ? 'timeline' : 'columns'} />
+</section>
+<CtaBand ctx={ctx} />
+<style>
+  .about-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-2xl); align-items: start; }
+  .about-photo img { inline-size: 100%; aspect-ratio: 9 / 11; object-fit: cover; border-radius: var(--radius); }
+  .about-text { font-size: var(--step-1); line-height: 1.6; }
+  .about-quote { font-family: var(--font-display); font-size: var(--step-2); line-height: 1.35; color: var(--primary); border-inline-start: 3px solid var(--primary); padding-inline-start: var(--space-l); }
+  @media (max-width: 48rem) { .about-grid { grid-template-columns: 1fr; } .about-photo { max-inline-size: 22rem; } }
+</style>

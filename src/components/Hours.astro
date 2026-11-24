@@ -1,0 +1,25 @@
+---
+import { weekHours, type Ctx } from '../i18n';
+interface Props { ctx: Ctx; compact?: boolean }
+const { ctx, compact } = Astro.props;
+const { t } = ctx;
+const rows = weekHours().filter((r) => !compact || r.open);
+---
+<table class="hours">
+  <caption class="visually-hidden">{t.ui.hours}</caption>
+  <tbody>
+    {rows.map((r) => (
+      <tr data-day={r.day}>
+        <th scope="row">{t.ui.days[r.day]}</th>
+        {r.open
+          ? <td><span dir="ltr">{r.open}–{r.close}</span></td>
+          : <td class="is-closed">{t.ui.closed}</td>}
+      </tr>
+    ))}
+  </tbody>
+</table>
+<script>
+  // Bold today's row (progressive enhancement).
+  const d = new Date().getDay();
+  document.querySelectorAll(`.hours tr[data-day="${d}"]`).forEach((tr) => tr.setAttribute('data-today', ''));
+</script>

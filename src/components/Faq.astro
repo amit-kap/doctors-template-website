@@ -1,0 +1,14 @@
+---
+import type { Ctx } from '../i18n';
+import Icon from './Icon.astro';
+interface Props { ctx: Ctx; headingLevel?: 2 | 3 }
+const { ctx } = Astro.props;
+---
+<div class="faq">
+  {ctx.t.faq.map((f) => (
+    <details>
+      <summary>{f.q}<Icon name="plus" /></summary>
+      <p class="faq-a">{f.a}</p>
+    </details>
+  ))}
+</div>

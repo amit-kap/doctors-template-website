@@ -1,0 +1,25 @@
+{
+  "name": "doctors-template-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "check:launch": "node scripts/prelaunch-check.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/rubik": "^5.3.0",
+    "@fontsource/assistant": "^5.3.0",
+    "@fontsource/frank-ruhl-libre": "^5.3.0",
+    "@fontsource/ibm-plex-sans-hebrew": "^5.3.0",
+    "astro": "^7.4.13"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "axe-core": "^4.14.1",
+    "typescript": "^6.0.3"
+  }
+}

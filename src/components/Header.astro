@@ -1,0 +1,96 @@
+---
+import { site } from '../site.config';
+import { href, type Ctx, type PageId } from '../i18n';
+import Icon from './Icon.astro';
+import LangSwitch from './LangSwitch.astro';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+const items: PageId[] = ['home', 'about', 'services', 'appointment'];
+const bookHref = site.contact.bookingUrl || href(ctx, 'appointment');
+const external = Boolean(site.contact.bookingUrl);
+---
+<header class="site-header">
+  {ctx.template === 'clinic' && (
+    <div class="utility" data-decor-none>
+      <div class="wrap utility-row">
+        <span><Icon name="pin" /> {t.address.street}, {t.address.city}</span>
+        <a href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /> <span dir="ltr">{site.contact.phone}</span></a>
+        <a href={href(ctx, 'accessibility')} class="utility-a11y"><Icon name="access" /> {t.ui.accessibleSite}</a>
+      </div>
+    </div>
+  )}
+  <div class="wrap header-row">
+    <a class="brand" href={href(ctx, 'home')} aria-current={ctx.page === 'home' ? 'page' : undefined}>
+      <span class="brand-name">{t.doctor.fullName}</span>
+      <span class="brand-spec">{t.doctor.specialty}</span>
+    </a>
+
+    <nav class="site-nav" id="site-nav" aria-label={t.ui.mainNav}>
+      <ul class="nav-list" role="list">
+        {items.map((p) => (
+          <li>
+            <a href={href(ctx, p)} aria-current={ctx.page === p ? 'page' : undefined}>{t.ui.nav[p]}</a>
+          </li>
+        ))}
+        <li class="nav-a11y">
+          <a href={href(ctx, 'accessibility')} aria-current={ctx.page === 'accessibility' ? 'page' : undefined}>
+            {t.ui.nav.accessibility}
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <LangSwitch ctx={ctx} />
+      <a class="btn btn-primary btn-book" href={bookHref} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+        <Icon name="calendar" />
+        <span>{t.ui.book}</span>
+        {external && <span class="visually-hidden">{t.ui.newWindow}</span>}
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>
+        <Icon name="menu" class="i-open" />
+        <Icon name="close" class="i-close" />
+        <span class="visually-hidden">{t.ui.menu}</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const nav = document.getElementById('site-nav');
+  if (btn && nav) {
+    const set = (open: boolean) => {
+      btn.setAttribute('aria-expanded', String(open));
+      nav.toggleAttribute('data-open', open);
+      if (open) nav.querySelector<HTMLElement>('a')?.focus();
+    };
+    const isOpen = () => btn.getAttribute('aria-expanded') === 'true';
+    btn.addEventListener('click', () => set(!isOpen()));
+    nav.addEventListener('click', (e) => { if ((e.target as Element).closest('a')) set(false); });
+    btn.closest('header')!.addEventListener('focusout', (e) => {
+      if (isOpen() && !btn.closest('header')!.contains(e.relatedTarget as Node)) set(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen()) { set(false); btn.focus(); }
+    });
+  }
+</script>
+
+<style>
+  .utility { background: var(--fg); color: var(--bg); font-size: var(--step--1); }
+  .utility-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-l); min-block-size: 2.5rem; padding-block: 0.25rem; }
+  .utility-row > * { display: inline-flex; align-items: center; gap: 0.4em; color: inherit; text-decoration: none; }
+  .utility-row :global(svg) { inline-size: 1em; block-size: 1em; flex: none; }
+  .utility-a11y { margin-inline-start: auto; font-weight: 600; text-decoration: underline !important; }
+  .utility-a11y :global(svg) { inline-size: 1.25em; block-size: 1.25em; }
+  @media (max-width: 40rem) { .utility-row > span:first-child { display: none; } }
+  .nav-a11y { display: none; }
+  @media (max-width: 72rem) { .nav-a11y { display: block; } }
+  .menu-toggle :global(.i-close) { display: none; }
+  .menu-toggle[aria-expanded='true'] :global(.i-close) { display: block; }
+  .menu-toggle[aria-expanded='true'] :global(.i-open) { display: none; }
+  @media (max-width: 30rem) { .brand-spec { display: none; } }
+</style>

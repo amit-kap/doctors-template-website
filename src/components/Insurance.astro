@@ -1,0 +1,12 @@
+---
+import type { Ctx } from '../i18n';
+import Icon from './Icon.astro';
+interface Props { ctx: Ctx }
+const { t } = Astro.props.ctx;
+---
+<div class="stack insurance">
+  <p class="measure">{t.insurance.text}</p>
+  <ul class="chips" role="list">
+    {t.insurance.items.map((i) => <li class="chip"><Icon name="shield" />{i}</li>)}
+  </ul>
+</div>

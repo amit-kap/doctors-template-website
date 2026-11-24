@@ -1,0 +1,14 @@
+---
+import { site } from '../site.config';
+import { content, href, type Ctx } from '../i18n';
+import Icon from './Icon.astro';
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const others = site.languages.filter((l) => l !== ctx.lang);
+---
+{others.map((l) => (
+  <a class="lang-switch" href={href(ctx, ctx.page, l)} hreflang={l} lang={l}>
+    <Icon name="globe" />
+    <span>{content[l].ui.languageName}</span>
+  </a>
+))}

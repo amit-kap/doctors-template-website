@@ -1,0 +1,67 @@
+---
+import '../styles/base.css';
+import '../styles/themes.css';
+import { site } from '../site.config';
+import { dirOf, href, type Ctx } from '../i18n';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import A11yPanel from '../components/A11yPanel.astro';
+import ShowcaseBar from '../components/ShowcaseBar.astro';
+
+interface Props { ctx: Ctx; title?: string }
+const { ctx, title } = Astro.props;
+const { t, lang } = ctx;
+const pageTitle = title ? `${title} | ${t.meta.siteName}` : t.meta.siteName;
+const brandStyle = [
+  site.brand.primary && `--primary:${site.brand.primary}`,
+  site.brand.accent && `--accent:${site.brand.accent}`,
+].filter(Boolean).join(';');
+const canonical = new URL(href({ ...ctx, prefix: '' }, ctx.page), site.url).href;
+---
+<!doctype html>
+<html lang={lang} dir={dirOf(lang)} data-template={ctx.template} style={brandStyle || undefined}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={t.meta.description} />
+    <link rel="canonical" href={canonical} />
+    {site.languages.map((l) => (
+      <link rel="alternate" hreflang={l} href={new URL(href({ ...ctx, prefix: '' }, ctx.page, l), site.url).href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={new URL(href({ ...ctx, prefix: '' }, ctx.page, site.languages[0]), site.url).href} />
+    {ctx.prefix && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={t.meta.description} />
+    <meta property="og:locale" content={lang === 'he' ? 'he_IL' : 'en_US'} />
+    <!-- Apply saved accessibility settings before first paint (no flash). -->
+    <script is:inline>
+      try {
+        var s = JSON.parse(localStorage.getItem('a11y') || '{}');
+        var r = document.documentElement;
+        if (s.scale && s.scale !== 1) r.style.setProperty('--a11y-scale', s.scale);
+        ['contrast', 'mono', 'links', 'readable', 'spacing', 'motion', 'focus'].forEach(function (k) {
+          if (s[k]) r.setAttribute('data-a11y-' + k, '');
+        });
+      } catch (e) {}
+    </script>
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t.ui.skipToContent}</a>
+    {site.showcase && <ShowcaseBar ctx={ctx} />}
+    <Header ctx={ctx} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer ctx={ctx} />
+    <A11yPanel ctx={ctx} />
+  </body>
+</html>
+
+<style>
+  main:focus { outline: none; }
+</style>

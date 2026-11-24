@@ -1,0 +1,14 @@
+---
+import { site } from '../site.config';
+import { registerHref, type Ctx } from '../i18n';
+interface Props { ctx: Ctx }
+const { t } = Astro.props.ctx;
+const { licenseNumber, specialistLicenseNumber } = site.doctor;
+---
+{licenseNumber && (
+  <p class="license">
+    <span>{t.ui.licenseLabel} {licenseNumber}</span>
+    {specialistLicenseNumber && <span>{t.ui.specialistLicenseLabel} {specialistLicenseNumber}</span>}
+    <a href={registerHref()} target="_blank" rel="noopener">{t.ui.verifyLicense}<span class="visually-hidden"> {t.ui.newWindow}</span></a>
+  </p>
+)}

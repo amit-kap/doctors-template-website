@@ -1,0 +1,15 @@
+---
+import { site } from '../site.config';
+import { content, href, type Ctx } from '../i18n';
+import Base from '../layouts/Base.astro';
+const lang = site.languages[0];
+const t = content[lang];
+const ctx: Ctx = { template: site.template, lang, page: 'home', prefix: '', t };
+---
+<Base ctx={ctx} title={t.ui.notFoundTitle}>
+  <section class="wrap page-head stack">
+    <h1>{t.ui.notFoundTitle}</h1>
+    <p class="lead">{t.ui.notFoundText}</p>
+    <p><a class="btn btn-primary" href={href(ctx, 'home')}>{t.ui.backHome}</a></p>
+  </section>
+</Base>

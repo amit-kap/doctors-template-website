@@ -1,0 +1,200 @@
+---
+/**
+ * A · CLINIC — conversion one-pager (reference: drgrubermaayan.co.il).
+ * Booking above the fold, quick facts strip, services grid, visit steps, insurance, FAQ, contact.
+ */
+import { site } from '../site.config';
+import { href, whatsappHref, wazeHref, type Ctx } from '../i18n';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import Hours from '../components/Hours.astro';
+import VisitSteps from '../components/VisitSteps.astro';
+import Insurance from '../components/Insurance.astro';
+import Faq from '../components/Faq.astro';
+import ContactBlock from '../components/ContactBlock.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+const d = t.doctor;
+const wa = whatsappHref();
+const bookHref = site.contact.bookingUrl || href(ctx, 'appointment');
+const icons: Record<string, string> = { ears: 'ear', tubes: 'ear', tonsils: 'child' };
+---
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <p class="eyebrow">{d.specialty}</p>
+      <h1>{d.headline}</h1>
+      <p class="lead">{d.intro}</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href={bookHref}><Icon name="calendar" />{t.ui.book}</a>
+        <a class="btn btn-outline btn-lg" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /><span dir="ltr">{site.contact.phone}</span></a>
+        {wa && <a class="btn btn-quiet btn-lg" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span></a>}
+      </div>
+      <ul class="hero-points" role="list">
+        {d.highlights.map((h) => <li><Icon name="check" />{h}</li>)}
+      </ul>
+    </div>
+    <figure class="hero-media">
+      <Img ctx={ctx} name={site.doctor.portrait} width={900} height={1100} eager sizes="(max-width: 56rem) 90vw, 40vw" />
+      <figcaption class="hero-card">
+        <strong>{d.fullName}</strong>
+        <span>{d.specialty}</span>
+        <span class="muted">{t.ui.licenseLabel} {site.doctor.licenseNumber}</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<div class="facts">
+  <div class="wrap facts-grid">
+    <div class="fact">
+      <Icon name="clock" />
+      <div><h2 class="fact-h">{t.ui.hours}</h2><Hours ctx={ctx} compact /></div>
+    </div>
+    <div class="fact">
+      <Icon name="pin" />
+      <div>
+        <h2 class="fact-h">{t.ui.address}</h2>
+        <p>{t.address.street}, {t.address.city}</p>
+        <p class="muted">{t.address.notes}</p>
+        <a href={wazeHref()} target="_blank" rel="noopener">{t.ui.openWaze}<span class="visually-hidden"> {t.ui.newWindow}</span></a>
+      </div>
+    </div>
+    <div class="fact">
+      <Icon name="shield" />
+      <div>
+        <h2 class="fact-h">{t.ui.insuranceTitle}</h2>
+        <p>{t.insurance.text}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="section" aria-labelledby="svc-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="svc-h">{t.ui.nav.services}</h2>
+      <a class="sec-link" href={href(ctx, 'services')}>{t.ui.allServices}<Icon name="arrow" /></a>
+    </div>
+    <ul class="svc-grid" role="list">
+      {t.services.map((s) => (
+        <li class="svc-card">
+          <span class="svc-icon"><Icon name={icons[s.id] ?? 'steth'} /></span>
+          <h3><a href={href(ctx, 'services', ctx.lang, `#${s.id}`)}>{s.title}</a></h3>
+          <p>{s.summary}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<section class="section about tone-tint" aria-labelledby="about-h">
+  <div class="wrap about-grid">
+    <figure class="about-img"><Img ctx={ctx} name="consultation" width={1600} height={1067} /></figure>
+    <div class="stack" style="--stack: var(--space-l)">
+      <h2 id="about-h">{d.fullName}</h2>
+      <p class="lead">{d.shortBio}</p>
+      <ul class="edu" role="list">
+        {d.education.map((e) => <li><Icon name="cap" /><span><strong>{e.title}</strong> · {e.place}</span></li>)}
+      </ul>
+      <a class="btn btn-outline" href={href(ctx, 'about')}>{t.ui.aboutMore}<Icon name="arrow" /></a>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="visit-h">
+  <div class="wrap stack" style="--stack: var(--space-xl)">
+    <h2 id="visit-h">{t.ui.visitTitle}</h2>
+    <VisitSteps ctx={ctx} />
+  </div>
+</section>
+
+<section class="section faq-sec" aria-labelledby="faq-h">
+  <div class="wrap faq-grid">
+    <div class="stack">
+      <h2 id="faq-h">{t.ui.faqTitle}</h2>
+      <Insurance ctx={ctx} />
+    </div>
+    <Faq ctx={ctx} />
+  </div>
+</section>
+
+<section class="section contact" aria-labelledby="contact-h">
+  <div class="wrap stack" style="--stack: var(--space-xl)">
+    <h2 id="contact-h">{t.ui.directions}</h2>
+    <ContactBlock ctx={ctx} />
+  </div>
+</section>
+
+<CtaBand ctx={ctx} />
+
+<style>
+  .hero { padding-block: clamp(2.5rem, 1rem + 5vw, 5.5rem); background:
+    radial-gradient(60rem 30rem at 85% -10%, color-mix(in oklch, var(--accent) 22%, transparent), transparent 70%), var(--bg); }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
+  .hero-text { display: grid; gap: var(--space-l); }
+  .hero h1 { font-size: var(--step-4); }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  .btn-lg { min-block-size: 3.25rem; padding-inline: 1.5em; }
+  .hero-points { display: grid; grid-template-columns: repeat(2, minmax(0, max-content)); gap: var(--space-xs) var(--space-xl); color: var(--muted); }
+  .hero-points li { display: flex; align-items: center; gap: 0.5em; }
+  .hero-points :global(svg) { inline-size: 1.1em; block-size: 1.1em; flex: none; color: var(--primary); }
+  .hero-media { position: relative; }
+  .hero-media :global(img) { inline-size: 100%; aspect-ratio: 9 / 11; object-fit: cover; border-radius: calc(var(--radius) * 2); }
+  .hero-card {
+    position: absolute; inset-block-end: var(--space-l); inset-inline-start: calc(-1 * var(--space-xl));
+    display: grid; gap: 0.1rem; padding: var(--space-m) var(--space-l);
+    background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); font-size: var(--step--1);
+  }
+  .hero-card strong { font-size: var(--step-0); }
+
+  .facts { border-block: 1px solid var(--line); background: var(--surface); }
+  .facts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }
+  .fact { display: flex; gap: var(--space-m); padding: var(--space-xl) var(--space-l); font-size: var(--step--1); }
+  .fact + .fact { border-inline-start: 1px solid var(--line); }
+  .fact > :global(svg) { inline-size: 1.75rem; block-size: 1.75rem; flex: none; color: var(--primary); }
+  .fact > div { display: grid; gap: var(--space-2xs); flex: 1; }
+  .fact-h { font-size: var(--step-0); font-family: var(--font-body); }
+
+  .sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--space-m); margin-block-end: var(--space-xl); }
+  .sec-link { display: inline-flex; align-items: center; gap: 0.4em; font-weight: 600; }
+  .sec-link :global(svg) { inline-size: 1.1em; block-size: 1.1em; }
+  .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); gap: var(--space-m); }
+  .svc-card {
+    position: relative; display: grid; gap: var(--space-s); align-content: start;
+    padding: var(--space-l); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  }
+  .svc-card h3 a { color: var(--fg); text-decoration: none; }
+  .svc-card h3 a::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+  .svc-card p { color: var(--muted); }
+  .svc-icon { display: grid; place-items: center; inline-size: 3rem; block-size: 3rem; border-radius: var(--radius-s); background: var(--primary-tint); color: var(--primary); }
+  .svc-icon :global(svg) { inline-size: 1.5rem; block-size: 1.5rem; }
+  .svc-card:has(a:focus-visible) { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .svc-card a:focus-visible { outline: none; }
+  @media (hover: hover) and (pointer: fine) {
+    .svc-card:hover { border-color: var(--primary); }
+    .svc-card:hover h3 a { color: var(--primary); }
+  }
+
+  .tone-tint { background: var(--surface-2); }
+  .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
+  .about-img :global(img) { inline-size: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: calc(var(--radius) * 2); }
+  .edu { display: grid; gap: var(--space-s); }
+  .edu li { display: flex; gap: var(--space-s); align-items: baseline; }
+  .edu :global(svg) { inline-size: 1.2em; block-size: 1.2em; flex: none; color: var(--primary); translate: 0 0.2em; }
+  .about .btn { justify-self: start; }
+
+  .faq-grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: var(--space-2xl); align-items: start; }
+  .contact { background: var(--surface); border-block-start: 1px solid var(--line); }
+
+  @media (max-width: 56rem) {
+    .hero-grid, .about-grid, .faq-grid { grid-template-columns: 1fr; }
+    .hero-media { max-inline-size: 26rem; }
+    .hero-card { inset-inline-start: var(--space-m); }
+    .fact + .fact { border-inline-start: 0; border-block-start: 1px solid var(--line); }
+  }
+  @media (max-width: 30rem) { .hero-points { grid-template-columns: 1fr; } }
+</style>

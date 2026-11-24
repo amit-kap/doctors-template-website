@@ -1,0 +1,69 @@
+---
+import { site } from '../site.config';
+import { href, whatsappHref, formatDate, type Ctx, type PageId } from '../i18n';
+import Icon from './Icon.astro';
+import Hours from './Hours.astro';
+import License from './License.astro';
+import ContactFabs from './ContactFabs.astro';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t, lang } = ctx;
+const links: PageId[] = ['home', 'about', 'services', 'appointment', 'accessibility', 'privacy'];
+const wa = whatsappHref();
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2 id="f-about">{t.doctor.fullName}</h2>
+        <p>{t.doctor.specialty}</p>
+        <License ctx={ctx} />
+      </div>
+
+      <div>
+        <h2 id="f-contact">{t.ui.directions}</h2>
+        <ul class="footer-list" role="list">
+          <li>{t.address.street}, {t.address.city}</li>
+          <li><a href={`tel:${site.contact.phoneHref}`}>{t.ui.call}: <span dir="ltr">{site.contact.phone}</span></a></li>
+          {wa && <li><a href={wa} target="_blank" rel="noopener">{t.ui.whatsappFull}<span class="visually-hidden"> {t.ui.newWindow}</span></a></li>}
+          <li><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 id="f-hours">{t.ui.hours}</h2>
+        <Hours ctx={ctx} compact />
+      </div>
+
+      <nav aria-labelledby="f-nav">
+        <h2 id="f-nav">{t.ui.footerNav}</h2>
+        <ul class="footer-list" role="list">
+          {links.map((p) => <li><a href={href(ctx, p)}>{t.ui.nav[p]}</a></li>)}
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-a11y">
+      <a class="a11y-badge" href={href(ctx, 'accessibility')}>
+        <Icon name="access" />
+        <span>{t.ui.accessibleSiteLong}</span>
+      </a>
+      <span class="footer-small">
+        {t.ui.statementUpdated}: <time datetime={site.accessibility.statementUpdated}>{formatDate(site.accessibility.statementUpdated, lang)}</time>
+      </span>
+      <a href={href(ctx, 'privacy')}>{t.ui.nav.privacy}</a>
+    </div>
+    <p class="footer-small footer-legal">{t.ui.medicalDisclaimer}</p>
+    <p class="footer-small footer-legal">© {year} {t.doctor.fullName}. {t.ui.rights}. · {t.ui.photoCredit}</p>
+  </div>
+  <ContactFabs ctx={ctx} />
+</footer>
+
+<style>
+  .footer-legal { margin-block-start: var(--space-s); max-inline-size: 60em; }
+  .site-footer :global(.hours th), .site-footer :global(.hours td) { border-color: color-mix(in oklch, currentColor 20%, transparent); }
+  .site-footer :global(.hours .is-closed) { color: inherit; opacity: 0.8; }
+  .site-footer :global(.license) { color: inherit; opacity: 0.9; margin-block-start: var(--space-s); }
+</style>
