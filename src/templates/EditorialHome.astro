@@ -4,7 +4,7 @@
  * The doctor's name and CV lead. Serif display, paper tones, thin rules, numbered index of services.
  */
 import { site } from '../site.config';
-import { href, whatsappHref, type Ctx } from '../i18n';
+import { href, whatsappHref, type Ctx, bookLink } from '../i18n';
 import Icon from '../components/Icon.astro';
 import Img from '../components/Img.astro';
 import Hours from '../components/Hours.astro';
@@ -17,7 +17,7 @@ const { ctx } = Astro.props;
 const { t } = ctx;
 const d = t.doctor;
 const wa = whatsappHref();
-const bookHref = site.contact.bookingUrl || href(ctx, 'appointment');
+const book = bookLink(ctx);
 let n = 0;
 ---
 <section class="masthead wrap">
@@ -26,7 +26,7 @@ let n = 0;
     <h1 class="mh-name">{d.fullName}</h1>
     <p class="mh-intro">{d.headline}</p>
     <div class="mh-actions">
-      <a class="btn btn-primary" href={bookHref}>{t.ui.book}<Icon name="arrow" /></a>
+      <a class="btn btn-primary" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>{t.ui.book}{book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}<Icon name="arrow" /></a>
       <a class="mh-phone" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /><span dir="ltr">{site.contact.phone}</span></a>
       {wa && <a class="mh-phone" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span></a>}
     </div>
@@ -122,7 +122,7 @@ let n = 0;
     <h2 id="close-h">{t.appointment.title}</h2>
     <p class="lead">{t.appointment.intro}</p>
     <div class="mh-actions">
-      <a class="btn btn-primary" href={bookHref}>{t.ui.book}<Icon name="arrow" /></a>
+      <a class="btn btn-primary" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>{t.ui.book}{book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}<Icon name="arrow" /></a>
       <a class="mh-phone" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /><span dir="ltr">{site.contact.phone}</span></a>
     </div>
   </div>

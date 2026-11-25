@@ -80,3 +80,123 @@
 
 /* Clinic: the utility bar scrolls away, the main header row stays. */
 :root[data-template='clinic'] .site-header { inset-block-start: -2.5rem; }
+
+/* D · Landing — SaaS-style conversion page. White, one confident medical blue.
+   Contrast (WCAG 2.x): fg/bg 17.3:1 · fg/surface-2 16.0:1 · muted/bg 7.4:1 · muted/surface-2 6.9:1 ·
+   primary/bg 6.9:1 · primary/surface-2 6.4:1 · white on primary 6.9:1 · footer 15.4:1. */
+:root[data-template='landing'] {
+  --bg: oklch(100% 0 none);
+  --surface: oklch(100% 0 none);
+  --surface-2: oklch(97.2% 0.008 250);
+  --fg: oklch(22% 0.025 255);
+  --muted: oklch(45% 0.02 255);
+  --line: oklch(90% 0.012 255);
+  --primary: oklch(47% 0.14 255);
+  --primary-hover: oklch(40% 0.13 255);
+  --primary-tint: oklch(95% 0.02 255);
+  --accent: oklch(47% 0.14 255);
+  --radius: 14px;
+  --radius-s: 10px;
+  --btn-radius: 10px;
+  --shadow: 0 1px 2px oklch(22% 0.025 255 / 0.06), 0 12px 32px -16px oklch(22% 0.025 255 / 0.18);
+  --font-body: 'IBM Plex Sans Hebrew', system-ui, sans-serif;
+  --font-display: 'IBM Plex Sans Hebrew', system-ui, sans-serif;
+  --display-weight: 700;
+  --display-tracking: -0.02em;
+  --footer-bg: oklch(22% 0.03 255);
+  --footer-fg: oklch(96% 0.01 250);
+}
+:root[data-template='landing'] .site-header { background: color-mix(in oklch, var(--bg) 94%, transparent); }
+/* Landing keeps the book button in the header on small phones too: icon only, the label stays for screen readers. */
+@media (max-width: 30rem) {
+  :root[data-template='landing'] .header-actions .btn-book { display: inline-flex; inline-size: 2.75rem; padding-inline: 0; }
+  :root[data-template='landing'] .header-actions .btn-book > span:not(.visually-hidden) {
+    clip-path: inset(50%); block-size: 1px; inline-size: 1px; overflow: hidden; position: absolute; white-space: nowrap;
+  }
+}
+
+/* E · Journey — calm premium page: off-white, sage / lilac / pale-yellow washes, thin type, dark pill buttons.
+   Contrast (WCAG 2.x): fg/bg 15.7:1 · muted/bg 7.2:1 · muted/sage 6.5:1 · muted/sage-2 6.1:1 · muted/lilac 6.3:1 ·
+   muted/yellow 6.9:1 · white on primary 16.5:1 · primary/bg 15.3:1 · footer fg/footer bg 14.5:1.
+   Hero text sits on a darkened photo: measured worst pixel 7.6:1 for body text, 4.3:1 under the large h1. */
+:root[data-template='journey'] {
+  --bg: #f7f6f1;
+  --surface: #ffffff;
+  --surface-2: oklch(94% 0.018 175);
+  --jr-sage: oklch(93.6% 0.018 175);
+  --jr-sage-2: oklch(91.5% 0.022 160);
+  --jr-lilac: oklch(93% 0.022 310);
+  --jr-yellow: oklch(95.5% 0.05 100);
+  --jr-violet: oklch(21% 0.05 295);
+  --fg: #1b1b1f;
+  --muted: #45454d;
+  --line: oklch(88% 0.008 100);
+  --primary: #1b1b1f;
+  --primary-hover: #34343b;
+  --primary-tint: oklch(94% 0.018 175);
+  --accent: #1b1b1f;
+  --radius: 20px;
+  --radius-s: 12px;
+  --btn-radius: 999px;
+  --shadow: 0 1px 2px oklch(23% 0.012 280 / 0.05), 0 18px 40px -24px oklch(23% 0.012 280 / 0.25);
+  --font-body: 'Heebo Variable', 'Heebo', system-ui, sans-serif;
+  --font-display: 'Heebo Variable', 'Heebo', system-ui, sans-serif;
+  --display-weight: 450;
+  --display-tracking: -0.02em;
+  --footer-bg: oklch(94.6% 0.014 160);
+  --footer-fg: #1b1b1f;
+
+  /* Type scale (Heebo Variable, one family for Hebrew and Latin so both scripts share proportions).
+     Seven roles. Display and h2 are light and tight; body is open. Hebrew values are set below. */
+  --j-display: clamp(1.75rem, 0.5rem + 6.2vw, 6.5rem);
+  --j-h2: clamp(1.85rem, 1.2rem + 2.9vw, 3.75rem);
+  --j-h3: clamp(1.3rem, 1.19rem + 0.5vw, 1.65rem);
+  --j-statement: clamp(1.45rem, 1.1rem + 1.55vw, 2.45rem);
+  --j-lead: clamp(1.125rem, 1.05rem + 0.34vw, 1.34rem);
+  --j-body: clamp(1rem, 0.98rem + 0.1vw, 1.0625rem);
+  --j-small: 0.9375rem;
+  --j-label: 0.8125rem;
+  --j-w-display: 400;
+  --j-w-strong: 500;
+  --j-lh-display: 1.02;
+  --j-lh-h2: 1.08;
+  --j-lh-h3: 1.25;
+  --j-lh-lead: 1.5;
+  --j-lh-body: 1.62;
+  --j-tr-display: -0.035em;
+  --j-tr-h2: -0.03em;
+  --j-tr-h3: -0.015em;
+  --j-tr-label: 0.09em;
+
+  /* Layout rhythm: two section paddings, one column gap, two radii, one hairline. */
+  --j-sec: clamp(4.5rem, 2.6rem + 7.6vw, 9.5rem);
+  --j-sec-s: clamp(2.5rem, 1.6rem + 3.6vw, 5rem);
+  --j-gap: clamp(1.5rem, 0.4rem + 4.4vw, 5.5rem);
+  --j-inset: clamp(0.5rem, 0.2rem + 1vw, 1rem);
+  --j-r-l: clamp(20px, 0.9rem + 1.1vw, 32px);
+  --j-r-m: clamp(16px, 0.75rem + 0.6vw, 22px);
+  --j-hair: color-mix(in oklch, var(--fg) 13%, transparent);
+  --j-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Hebrew: no capitals, so labels are not tracked or uppercased; letters are squarer and denser than Latin,
+   so display sizes go up a step, tracking is looser and running text gets more leading. */
+:root[data-template='journey']:lang(he) {
+  --j-display: clamp(2rem, 0.6rem + 7vw, 6.9rem);
+  --j-h2: clamp(1.95rem, 1.25rem + 3.1vw, 4rem);
+  --j-label: 0.9375rem;
+  --j-lh-display: 1.06;
+  --j-lh-h2: 1.12;
+  --j-lh-h3: 1.3;
+  --j-lh-lead: 1.58;
+  --j-lh-body: 1.72;
+  --j-tr-display: -0.02em;
+  --j-tr-h2: -0.018em;
+  --j-tr-h3: -0.008em;
+  --j-tr-label: 0;
+}
+:root[data-template='journey'] body { font-size: var(--j-body); line-height: var(--j-lh-body); }
+:root[data-template='journey'] .site-header { background: color-mix(in oklch, var(--bg) 92%, transparent); border-block-end-color: transparent; }
+:root[data-template='journey'] .brand-name { font-weight: 400; }
+:root[data-template='journey'] .nav-list a { border-radius: 999px; font-weight: 400; }
+:root[data-template='journey'] .nav-list a[aria-current='page'] { box-shadow: none; background: var(--jr-sage); color: var(--fg); }
+:root[data-template='journey'] .site-footer { border-block-start: 1px solid var(--line); }

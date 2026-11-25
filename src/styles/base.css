@@ -15,6 +15,7 @@
 @import '@fontsource/assistant/600.css';
 @import '@fontsource/assistant/700.css';
 @import '@fontsource-variable/rubik/wght.css';
+@import '@fontsource-variable/heebo/wght.css';
 
 /* ---------- Reset ---------- */
 *,
@@ -288,6 +289,9 @@ html { scroll-padding-block: 6rem 5rem; }
   background: var(--surface);
 }
 .menu-toggle:active { scale: 0.96; }
+/* Accessibility settings opener (on the accessibility statement page). */
+.a11y-open { display: inline-flex; align-items: center; gap: 0.6em; }
+.a11y-open svg { inline-size: 1.4em; block-size: 1.4em; }
 .menu-toggle svg { inline-size: 1.4rem; block-size: 1.4rem; }
 
 @media (max-width: 72rem) {
@@ -311,63 +315,23 @@ html { scroll-padding-block: 6rem 5rem; }
   .header-actions .btn-book { display: none; }
 }
 
+/* Text enlarged from the accessibility panel: rem media queries do not react to it, so let the header wrap. */
+html[style*='--a11y-scale'] .header-row { flex-wrap: wrap; row-gap: var(--space-xs); padding-block: var(--space-xs); }
+html[style*='--a11y-scale'] :is(.site-nav, .header-actions) { flex: 0 1 auto; }
+html[style*='--a11y-scale'] :is(.nav-list, .header-actions) { flex-wrap: wrap; }
+html[style*='--a11y-scale'] .header-actions .btn { white-space: normal; }
+
 /* ---------- Footer ---------- */
 .site-footer {
   background: var(--footer-bg, var(--fg));
   color: var(--footer-fg, var(--bg));
-  padding-block: var(--space-2xl) var(--space-xl);
-  font-size: var(--step--1);
+  padding-block: clamp(3rem, 2rem + 4vw, 5rem) 6rem;
+  font-size: var(--step-0);
+  line-height: 1.6;
 }
 .site-footer a { color: inherit; }
-.footer-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-  gap: var(--space-xl);
-}
-.footer-grid h2 { font-size: var(--step-0); margin-block-end: var(--space-s); font-family: var(--font-body); }
-.footer-list { display: grid; gap: var(--space-xs); }
-.footer-a11y {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-s) var(--space-l);
-  margin-block-start: var(--space-xl);
-  padding-block-start: var(--space-l);
-  border-block-start: 1px solid color-mix(in oklch, currentColor 25%, transparent);
-}
-.a11y-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6em;
-  padding: 0.5em 0.9em;
-  border: 1.5px solid currentColor;
-  border-radius: 999px;
-  font-weight: 600;
-  text-decoration: none;
-}
-.a11y-badge svg { inline-size: 1.4em; block-size: 1.4em; flex: none; }
-.footer-small { opacity: 0.85; }
-.site-footer { padding-block-end: 6rem; }
 
 /* ---------- Floating actions: accessibility + contact ---------- */
-.fab-a11y {
-  position: fixed;
-  inset-block-end: var(--space-m);
-  inset-inline-start: var(--space-m);
-  z-index: 60;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: 3.5rem;
-  block-size: 3.5rem;
-  border: 2px solid var(--on-a11y, white);
-  border-radius: 999px;
-  background: var(--a11y-bg, oklch(38% 0.17 262));
-  color: var(--on-a11y, white);
-  box-shadow: 0 0 0 2px var(--a11y-bg, oklch(38% 0.17 262)), var(--shadow);
-}
-.fab-a11y svg { inline-size: 2.25rem; block-size: 2.25rem; }
-.fab-a11y:active { scale: 0.96; }
 
 .fab-contact {
   position: fixed;
@@ -389,7 +353,7 @@ html { scroll-padding-block: 6rem 5rem; }
   box-shadow: var(--shadow);
 }
 .fab-contact svg { inline-size: 1.6rem; block-size: 1.6rem; }
-.fab-contact .fab-wa { background: oklch(45% 0.12 150); }
+.fab-contact .fab-wa { background: #25d366; color: #fff; border: 2px solid #075e54; } /* WhatsApp brand green as in the app. Dark-teal ring (#075e54, WhatsApp palette) keeps the button outline ≥3:1 on light pages; on dark footers the green itself is 6.6:1. The white logo on green is ~2:1: accepted for the brand mark (button has a spoken name). */
 .fab-contact .fab-call { background: var(--primary); color: var(--on-primary); }
 .fab-contact a:active { scale: 0.95; }
 
@@ -677,7 +641,7 @@ html[data-a11y-focus] :focus {
 
 /* Windows High Contrast / forced colors */
 @media (forced-colors: active) {
-  .btn, .a11y-toggle, .fab-a11y, .fab-contact a { border: 2px solid ButtonText; }
+  .btn, .a11y-toggle, .a11y-open, .fab-contact a { border: 2px solid ButtonText; }
   .a11y-toggle[aria-pressed='true'] { outline: 3px solid Highlight; }
   .nav-list a[aria-current='page'] { text-decoration: underline; text-decoration-thickness: 3px; }
   .menu-toggle, .a11y-size button, .faq details, .card { border: 1px solid ButtonText; }

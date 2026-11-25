@@ -1,6 +1,6 @@
 ---
 import { site } from '../site.config';
-import { href, type Ctx, type PageId } from '../i18n';
+import { href, type Ctx, type PageId, bookLink } from '../i18n';
 import Icon from './Icon.astro';
 import LangSwitch from './LangSwitch.astro';
 
@@ -8,8 +8,7 @@ interface Props { ctx: Ctx }
 const { ctx } = Astro.props;
 const { t } = ctx;
 const items: PageId[] = ['home', 'about', 'services', 'appointment'];
-const bookHref = site.contact.bookingUrl || href(ctx, 'appointment');
-const external = Boolean(site.contact.bookingUrl);
+const book = bookLink(ctx);
 ---
 <header class="site-header">
   {ctx.template === 'clinic' && (
@@ -44,10 +43,10 @@ const external = Boolean(site.contact.bookingUrl);
 
     <div class="header-actions">
       <LangSwitch ctx={ctx} />
-      <a class="btn btn-primary btn-book" href={bookHref} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+      <a class="btn btn-primary btn-book" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
         <Icon name="calendar" />
         <span>{t.ui.book}</span>
-        {external && <span class="visually-hidden">{t.ui.newWindow}</span>}
+        {book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}
       </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>
         <Icon name="menu" class="i-open" />

@@ -28,6 +28,7 @@ const phys = Object.entries(acc.physical) as [keyof typeof s.physicalLabels, boo
 
   <h2>{s.toolbarTitle}</h2>
   <p>{s.toolbar}</p>
+  <p><button class="btn btn-primary a11y-open" type="button" aria-haspopup="dialog" aria-controls="a11y-dialog" data-a11y-open><Icon name="access" />{ctx.t.a11y.open}</button></p>
 
   <h2>{s.gapsTitle}</h2>
   <ul>{s.gaps.map((x) => <li>{x}</li>)}</ul>

@@ -21,10 +21,6 @@ const toggles = [
   { key: 'focus', icon: 'focus', label: a11y.focus },
 ];
 ---
-<button class="fab-a11y" type="button" aria-haspopup="dialog" aria-controls="a11y-dialog" data-a11y-open>
-  <Icon name="access" />
-  <span class="visually-hidden">{a11y.open}</span>
-</button>
 
 <dialog data-ui class="a11y-dialog" id="a11y-dialog" aria-labelledby="a11y-title">
   <div class="a11y-head">
@@ -88,7 +84,7 @@ const toggles = [
     try { localStorage.setItem('a11y', JSON.stringify(state)); } catch {}
   }
 
-  document.querySelector('[data-a11y-open]')?.addEventListener('click', () => dialog.showModal());
+  document.querySelectorAll('[data-a11y-open]').forEach((b) => b.addEventListener('click', () => dialog.showModal()));
   document.querySelector('[data-a11y-close]')?.addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
 

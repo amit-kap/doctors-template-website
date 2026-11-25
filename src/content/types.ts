@@ -10,6 +10,7 @@ export interface Content {
     closeMenu: string;
     mainNav: string;
     footerNav: string;
+    footerClinic: string;
     book: string;
     bookShort: string;
     call: string;
@@ -57,6 +58,7 @@ export interface Content {
     opens: string;
     today: string;
     tomorrow: string;
+    trustTitle: string;
   };
   a11y: Record<
     | 'open' | 'title' | 'close' | 'textSize' | 'smaller' | 'larger' | 'contrast' | 'monochrome'
@@ -115,7 +117,38 @@ export interface Content {
   images: Record<string, string>;
   statement: Statement;
   privacy: { title: string; updated: string; sections: { h: string; p: string[] }[] };
-  templates: Record<'clinic' | 'editorial' | 'warm', string>;
+  templates: Record<'clinic' | 'editorial' | 'warm' | 'landing' | 'journey', string>;
+  /** Texts used only by the "journey" home layout. */
+  journey: {
+    heroLabel: string;
+    /** The hero headline, one entry per line (two short lines). */
+    heroLines: string[];
+    visitIntro: string;
+    credTitle: string;
+    bookFirst: string;
+    factsLabel: string;
+    specialtyLabel: string;
+    allHours: string;
+    aboutLabel: string;
+    treatmentsLabel: string;
+    treatmentsTitle: string;
+    whyLabel: string;
+    whyTitle: string;
+    goodToKnow: string;
+    pathLabel: string;
+    pathTitle: string;
+    pathEnd: string;
+    doctorLabel: string;
+    doctorWords: string;
+    faqLabel: string;
+    locationLabel: string;
+    ctaLabel: string;
+    ctaTitle: string;
+    ctaText: string;
+    readyTitle: string;
+    /** Label before the links to the treatments that have no card on the home page. */
+    alsoLabel: string;
+  };
 }
 
 export interface Statement {

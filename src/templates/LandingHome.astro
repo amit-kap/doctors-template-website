@@ -1,0 +1,285 @@
+---
+/**
+ * D · LANDING — SaaS landing-page structure applied to a clinic.
+ * One primary action (book a first appointment), repeated down the page:
+ * hero → trust bar → treatments → how it works → about → location & hours → FAQ → final CTA.
+ * No testimonials, ratings, prices or superlatives (Physicians Advertising Regulations 2008).
+ */
+import { site } from '../site.config';
+import { href, latin, whatsappHref, wazeHref, mapsHref, type Ctx, bookLink } from '../i18n';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import Hours from '../components/Hours.astro';
+import OpenNow from '../components/OpenNow.astro';
+import License from '../components/License.astro';
+import VisitSteps from '../components/VisitSteps.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+const d = t.doctor;
+const wa = whatsappHref();
+const book = bookLink(ctx);
+const icons: Record<string, string> = { ears: 'ear', tubes: 'ear', tonsils: 'child' };
+const physical = Object.entries(site.accessibility.physical) as [keyof typeof t.statement.physicalLabels, boolean][];
+---
+<section class="hero" aria-labelledby="hero-h">
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <p class="eyebrow">{d.fullName} · {d.specialty}</p>
+      <h1 id="hero-h">{d.headline}</h1>
+      <p class="lead">{d.intro}</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
+          <Icon name="calendar" />{t.ui.book}{book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}
+        </a>
+        <a class="btn btn-outline btn-lg" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /><span class="visually-hidden">{t.ui.callFull}: </span><span dir="ltr">{site.contact.phone}</span></a>
+        {wa && <a class="btn btn-quiet btn-lg" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span></a>}
+      </div>
+      <ul class="hero-facts" role="list">
+        <li>
+          <Icon name="clock" />
+          <div><span class="fact-label">{t.ui.hours}</span><OpenNow ctx={ctx} class="fact-open" /></div>
+        </li>
+        <li>
+          <Icon name="pin" />
+          <div>
+            <span class="fact-label">{t.ui.address}</span>
+            <span>{t.address.street}, {t.address.city}</span>
+            <a href={wazeHref()} target="_blank" rel="noopener">{t.ui.openWaze}<span class="visually-hidden"> {t.ui.newWindow}</span></a>
+          </div>
+        </li>
+        <li>
+          <Icon name="shield" />
+          <div><span class="fact-label">{t.ui.insuranceTitle}</span><span>{t.insurance.items.join(' · ')}</span></div>
+        </li>
+      </ul>
+    </div>
+    <figure class="hero-media">
+      <Img ctx={ctx} name={site.doctor.portrait} width={900} height={1100} eager sizes="(max-width: 56rem) 90vw, 36vw" />
+    </figure>
+  </div>
+</section>
+
+<section class="trust" aria-labelledby="trust-h">
+  <div class="wrap trust-inner">
+    <h2 id="trust-h" class="trust-h">{t.ui.trustTitle}</h2>
+    <ul class="trust-marks" role="list">
+      <li class="mark"><Icon name="award" /><span>{d.specialty}</span></li>
+      <li class="mark mark-license"><License ctx={ctx} /></li>
+      {d.memberships.map((m) => <li class="mark"><Icon name="cap" /><span>{m}</span></li>)}
+    </ul>
+    <p class="trust-ins"><strong>{t.ui.insuranceTitle}:</strong> {t.insurance.items.join(' · ')}</p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="svc-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-title">
+        <h2 id="svc-h">{t.ui.nav.services}</h2>
+      </div>
+      <a class="sec-link" href={href(ctx, 'services')}>{t.ui.allServices}<Icon name="arrow" /></a>
+    </div>
+    <ul class="svc-grid" role="list">
+      {t.services.map((s) => (
+        <li class="svc-card">
+          <span class="svc-icon"><Icon name={icons[s.id] ?? 'steth'} /></span>
+          <h3><a href={href(ctx, 'services', ctx.lang, `#${s.id}`)}>{s.title}</a></h3>
+          <p>{s.summary}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<section class="section tone-tint how" aria-labelledby="visit-h">
+  <div class="wrap">
+    <div class="sec-head sec-head-center">
+      <h2 id="visit-h">{t.ui.visitTitle}</h2>
+    </div>
+    <VisitSteps ctx={ctx} />
+    <div class="how-cta">
+      <a class="btn btn-primary btn-lg" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
+        <Icon name="calendar" />{t.ui.book}{book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="about-h">
+  <div class="wrap about-grid">
+    <figure class="about-img"><Img ctx={ctx} name="consultation" width={1600} height={1067} sizes="(max-width: 56rem) 90vw, 45vw" /></figure>
+    <div class="about-text">
+      <p class="eyebrow">{t.ui.nav.about}</p>
+      <h2 id="about-h">{d.fullName}</h2>
+      <p class="about-bio">{d.shortBio}</p>
+      <ul class="edu" role="list">
+        {d.education.map((e) => <li><Icon name="check" /><span><strong set:html={latin(e.title, ctx.lang)} /><span class="muted"> · {e.place}</span></span></li>)}
+      </ul>
+      <a class="sec-link" href={href(ctx, 'about')}>{t.ui.aboutMore}<Icon name="arrow" /></a>
+    </div>
+  </div>
+</section>
+
+<section class="section tone-tint" aria-labelledby="loc-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="loc-h">{t.ui.directions}</h2>
+    </div>
+    <div class="loc-grid">
+      <div class="loc-card">
+        <h3><Icon name="pin" />{t.ui.address}</h3>
+        <p class="loc-street">{t.address.street}, {t.address.city}</p>
+        <p class="muted">{t.address.notes}</p>
+        <div class="loc-actions">
+          <a class="btn btn-outline" href={wazeHref()} target="_blank" rel="noopener">{t.ui.openWaze}<span class="visually-hidden"> {t.ui.newWindow}</span></a>
+          <a class="btn btn-outline" href={mapsHref()} target="_blank" rel="noopener">{t.ui.openMaps}<span class="visually-hidden"> {t.ui.newWindow}</span></a>
+        </div>
+        <h3 class="loc-sub"><Icon name="access" />{t.statement.physicalTitle}</h3>
+        <ul class="access-list" role="list">
+          {physical.map(([key, ok]) => (
+            <li data-ok={ok ? '' : undefined}>
+              <Icon name={ok ? 'check' : 'close'} />
+              <span>{t.statement.physicalLabels[key]}: <strong>{ok ? t.statement.yes : t.statement.no}</strong></span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="loc-card">
+        <h3><Icon name="clock" />{t.ui.hours}</h3>
+        <OpenNow ctx={ctx} />
+        <Hours ctx={ctx} />
+        <p class="loc-phone">
+          <a href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /><span class="visually-hidden">{t.ui.callFull}: </span><span dir="ltr">{site.contact.phone}</span></a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="faq-h">
+  <div class="wrap faq-grid">
+    <div class="faq-intro">
+      <h2 id="faq-h">{t.ui.faqTitle}</h2>
+      <p class="muted">{t.insurance.text}</p>
+      <a class="sec-link" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" />{t.ui.callFull}</a>
+    </div>
+    <Faq ctx={ctx} />
+  </div>
+</section>
+
+<CtaBand ctx={ctx} />
+
+<style>
+  /* Hero */
+  .hero { padding-block: clamp(2.5rem, 1rem + 5vw, 6rem) clamp(2.5rem, 1rem + 4vw, 5rem); }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
+  .hero-text { display: grid; gap: var(--space-l); justify-items: start; }
+  .hero .eyebrow { color: var(--primary); }
+  .hero h1 { font-size: clamp(2rem, 1.4rem + 3vw, 4.4rem); line-height: 1.1; max-inline-size: 16em; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  .btn-lg { min-block-size: 3.25rem; padding-inline: 1.5em; }
+  .hero-facts {
+    display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.3fr); gap: var(--space-m) var(--space-l);
+    inline-size: 100%; margin-block-start: var(--space-s); padding-block-start: var(--space-l);
+    border-block-start: 1px solid var(--line); font-size: var(--step--1);
+  }
+  .hero-facts li { display: flex; gap: var(--space-s); align-items: start; }
+  .hero-facts li > :global(svg) { inline-size: 1.25rem; block-size: 1.25rem; flex: none; color: var(--primary); margin-block-start: 0.15em; }
+  .hero-facts div { display: grid; gap: 0.1rem; }
+  .fact-label { font-weight: 600; color: var(--fg); }
+  .hero-facts :global(.fact-open) { font-weight: 400; }
+  .hero-media { justify-self: end; inline-size: 100%; }
+  .hero-media :global(img) { inline-size: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: calc(var(--radius) * 1.5); background: var(--surface-2); }
+
+  /* Trust bar */
+  .trust { background: var(--surface-2); border-block: 1px solid var(--line); padding-block: var(--space-xl); }
+  .trust-inner { display: grid; gap: var(--space-m); justify-items: center; text-align: center; }
+  .trust-h { font-family: var(--font-body); font-size: var(--step--1); font-weight: 600; color: var(--muted); letter-spacing: 0.02em; }
+  .trust-marks { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-s) var(--space-xl); }
+  .mark { display: inline-flex; align-items: center; gap: 0.5em; font-weight: 600; color: var(--fg); }
+  .mark > :global(svg) { inline-size: 1.25em; block-size: 1.25em; flex: none; color: var(--primary); }
+  .mark-license :global(.license) { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 0.75em; }
+  .trust-ins { font-size: var(--step--1); color: var(--muted); max-inline-size: 60em; }
+  .trust-ins strong { color: var(--fg); }
+
+  .tone-tint { background: var(--surface-2); border-block: 1px solid var(--line); }
+
+  /* Section heads */
+  .sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--space-m); margin-block-end: var(--space-xl); }
+  .sec-head-center { justify-content: center; text-align: center; }
+  .sec-link { display: inline-flex; align-items: center; gap: 0.4em; min-block-size: 2.75rem; font-weight: 600; }
+  .sec-link :global(svg) { inline-size: 1.1em; block-size: 1.1em; flex: none; }
+
+  /* Treatments */
+  .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); gap: var(--space-m); }
+  .svc-card {
+    position: relative; display: grid; gap: var(--space-s); align-content: start;
+    padding: var(--space-l); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  }
+  .svc-card h3 a::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+  .svc-card p { color: var(--muted); }
+  .svc-icon { display: grid; place-items: center; inline-size: 2.75rem; block-size: 2.75rem; border-radius: var(--radius-s); background: var(--primary-tint); color: var(--primary); }
+  .svc-icon :global(svg) { inline-size: 1.4rem; block-size: 1.4rem; }
+  .svc-card:has(a:focus-visible) { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .svc-card a:focus-visible { outline: none; }
+  @media (hover: hover) and (pointer: fine) {
+    .svc-card:hover { border-color: var(--primary); box-shadow: var(--shadow); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .svc-card { transition: border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); }
+  }
+
+  /* How it works */
+  .how :global(.visit) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+  .how :global(.visit li) { padding: var(--space-l); background: var(--surface); border: 1px solid var(--line); border-block-start: 3px solid var(--primary); border-radius: var(--radius); }
+  .how-cta { display: flex; justify-content: center; margin-block-start: var(--space-xl); }
+
+  /* About */
+  .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 1rem + 4vw, 5rem); align-items: center; }
+  .about-img :global(img) { inline-size: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: calc(var(--radius) * 1.5); }
+  .about-text { display: grid; gap: var(--space-m); justify-items: start; }
+  .about-text .eyebrow { color: var(--primary); }
+  .about-bio { font-size: var(--step-1); line-height: 1.55; color: var(--muted); }
+  .edu { display: grid; gap: var(--space-s); }
+  .edu li { display: flex; gap: var(--space-s); align-items: baseline; }
+  .edu :global(svg) { inline-size: 1.1em; block-size: 1.1em; flex: none; color: var(--primary); translate: 0 0.2em; }
+
+  /* Location & hours */
+  .loc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--space-m); }
+  .loc-card { display: grid; gap: var(--space-s); align-content: start; padding: var(--space-xl); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+  .loc-card h3 { display: flex; align-items: center; gap: 0.5em; }
+  .loc-card h3 :global(svg) { inline-size: 1.25em; block-size: 1.25em; flex: none; color: var(--primary); }
+  .loc-sub { margin-block-start: var(--space-l); }
+  .loc-street { font-weight: 600; }
+  .loc-actions { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-block-start: var(--space-xs); }
+  .loc-actions .btn { white-space: normal; text-align: center; }
+  .access-list { display: grid; gap: var(--space-xs); font-size: var(--step--1); }
+  .access-list li { display: flex; gap: var(--space-xs); align-items: baseline; color: var(--muted); }
+  .access-list li[data-ok] { color: var(--fg); }
+  .access-list :global(svg) { inline-size: 1.1em; block-size: 1.1em; flex: none; translate: 0 0.2em; }
+  .access-list li[data-ok] :global(svg) { color: var(--primary); }
+  .loc-phone a { display: inline-flex; align-items: center; gap: 0.5em; min-block-size: 2.75rem; font-weight: 600; font-size: var(--step-1); }
+  .loc-phone :global(svg) { inline-size: 1em; block-size: 1em; flex: none; }
+
+  /* FAQ */
+  .faq-grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: var(--space-2xl); align-items: start; }
+  .faq-intro { display: grid; gap: var(--space-m); justify-items: start; }
+
+  @media (max-width: 56rem) {
+    .hero-grid, .about-grid, .faq-grid { grid-template-columns: 1fr; }
+    .hero-media { justify-self: start; max-inline-size: 24rem; }
+    .about-img { order: 2; }
+  }
+  @media (max-width: 44rem) {
+    .hero-facts { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 30rem) {
+    .hero-cta { display: grid; grid-template-columns: 1fr; inline-size: 100%; }
+    .hero-cta .btn { inline-size: 100%; }
+    .loc-card { padding: var(--space-l); }
+  }
+</style>

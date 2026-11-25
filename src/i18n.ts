@@ -11,7 +11,7 @@ export const dirOf = (lang: string) => (RTL.has(lang) ? 'rtl' : 'ltr');
 export const PAGES = ['home', 'about', 'services', 'appointment', 'accessibility', 'privacy'] as const;
 export type PageId = (typeof PAGES)[number];
 
-export const TEMPLATES: TemplateId[] = ['clinic', 'editorial', 'warm'];
+export const TEMPLATES: TemplateId[] = ['clinic', 'editorial', 'warm', 'landing', 'journey'];
 
 /** Everything a component needs to render in the right language and template. */
 export interface Ctx {
@@ -30,6 +30,12 @@ export function href(ctx: Pick<Ctx, 'prefix' | 'lang'>, page: PageId, lang: Lang
   const langSeg = lang === site.languages[0] ? '' : `/${lang}`;
   const pageSeg = page === 'home' ? '/' : `/${page}/`;
   return `${ctx.prefix}${langSeg}${pageSeg}${hash}`;
+}
+
+/** The "book" target: the clinic's own booking system (new window) if set, else our request form. */
+export function bookLink(ctx: Pick<Ctx, 'prefix' | 'lang'>): { href: string; external: boolean } {
+  const url = site.contact.bookingUrl;
+  return url ? { href: url, external: true } : { href: href(ctx, 'appointment'), external: false };
 }
 
 export const img = (key: string) => site.images[key];

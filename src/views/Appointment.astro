@@ -1,6 +1,6 @@
 ---
 import { site } from '../site.config';
-import type { Ctx } from '../i18n';
+import { bookLink, type Ctx } from '../i18n';
 import PageHead from '../components/PageHead.astro';
 import AppointmentForm from '../components/AppointmentForm.astro';
 import ContactBlock from '../components/ContactBlock.astro';
@@ -10,14 +10,15 @@ interface Props { ctx: Ctx }
 const { ctx } = Astro.props;
 const { t } = ctx;
 const a = t.appointment;
+const book = bookLink(ctx);
 ---
 <PageHead title={a.title} lead={a.intro} />
 <section class="wrap appt-grid" aria-label={a.title}>
   <div class="card appt-card">
-    {site.contact.bookingUrl ? (
+    {book.external ? (
       <div class="stack">
         <h2>{a.externalTitle}</h2>
-        <a class="btn btn-primary" href={site.contact.bookingUrl} target="_blank" rel="noopener">
+        <a class="btn btn-primary" href={book.href} target="_blank" rel="noopener">
           <Icon name="calendar" />{a.externalText}<span class="visually-hidden"> {t.ui.newWindow}</span>
         </a>
       </div>

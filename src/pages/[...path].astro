@@ -11,6 +11,8 @@ import Base from '../layouts/Base.astro';
 import ClinicHome from '../templates/ClinicHome.astro';
 import EditorialHome from '../templates/EditorialHome.astro';
 import WarmHome from '../templates/WarmHome.astro';
+import LandingHome from '../templates/LandingHome.astro';
+import JourneyHome from '../templates/JourneyHome.astro';
 import About from '../views/About.astro';
 import Services from '../views/Services.astro';
 import Appointment from '../views/Appointment.astro';
@@ -33,7 +35,7 @@ export function getStaticPaths() {
 const { template, lang, page } = Astro.props as { template: Ctx['template']; lang: Lang; page: PageId };
 const t = content[lang];
 const ctx: Ctx = { template, lang, page, prefix: prefixFor(template), t };
-const homes = { clinic: ClinicHome, editorial: EditorialHome, warm: WarmHome };
+const homes = { clinic: ClinicHome, editorial: EditorialHome, warm: WarmHome, landing: LandingHome, journey: JourneyHome };
 const Home = homes[template];
 const titles: Record<PageId, string | undefined> = {
   home: undefined,

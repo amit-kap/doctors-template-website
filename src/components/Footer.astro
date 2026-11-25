@@ -1,69 +1,177 @@
 ---
 import { site } from '../site.config';
-import { href, whatsappHref, formatDate, type Ctx, type PageId } from '../i18n';
+import { href, whatsappHref, registerHref, formatDate, type Ctx, type PageId } from '../i18n';
 import Icon from './Icon.astro';
 import Hours from './Hours.astro';
-import License from './License.astro';
 import ContactFabs from './ContactFabs.astro';
 
 interface Props { ctx: Ctx }
 const { ctx } = Astro.props;
 const { t, lang } = ctx;
-const links: PageId[] = ['home', 'about', 'services', 'appointment', 'accessibility', 'privacy'];
+const legal: PageId[] = ['accessibility', 'privacy'];
 const wa = whatsappHref();
 const year = new Date().getFullYear();
+const { licenseNumber, specialistLicenseNumber } = site.doctor;
 ---
 <footer class="site-footer">
   <div class="wrap">
     <div class="footer-grid">
-      <div>
-        <h2 id="f-about">{t.doctor.fullName}</h2>
-        <p>{t.doctor.specialty}</p>
-        <License ctx={ctx} />
-      </div>
+      <section class="f-col" aria-labelledby="f-about">
+        <h2 id="f-about" class="f-h">{t.ui.footerClinic}</h2>
+        <p class="f-name">{t.doctor.fullName}</p>
+        <p class="f-spec">{t.doctor.specialty}</p>
+        {licenseNumber && (
+          <dl class="f-license">
+            <div><dt>{t.ui.licenseLabel}</dt><dd>{licenseNumber}</dd></div>
+            {specialistLicenseNumber && <div><dt>{t.ui.specialistLicenseLabel}</dt><dd>{specialistLicenseNumber}</dd></div>}
+          </dl>
+        )}
+        {licenseNumber && (
+          <a class="f-link" href={registerHref()} target="_blank" rel="noopener">
+            {t.ui.verifyLicense}<span class="visually-hidden"> {t.ui.newWindow}</span>
+          </a>
+        )}
+      </section>
 
-      <div>
-        <h2 id="f-contact">{t.ui.directions}</h2>
-        <ul class="footer-list" role="list">
-          <li>{t.address.street}, {t.address.city}</li>
-          <li><a href={`tel:${site.contact.phoneHref}`}>{t.ui.call}: <span dir="ltr">{site.contact.phone}</span></a></li>
-          {wa && <li><a href={wa} target="_blank" rel="noopener">{t.ui.whatsappFull}<span class="visually-hidden"> {t.ui.newWindow}</span></a></li>}
-          <li><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></li>
+      <section class="f-col" aria-labelledby="f-contact">
+        <h2 id="f-contact" class="f-h">{t.ui.directions}</h2>
+        <ul class="f-rows" role="list">
+          <li><Icon name="pin" /><span>{t.address.street}<br />{t.address.city}</span></li>
+          <li><Icon name="phone" /><a href={`tel:${site.contact.phoneHref}`}><span class="visually-hidden">{t.ui.call}: </span><span dir="ltr">{site.contact.phone}</span></a></li>
+          {wa && <li><Icon name="whatsapp" /><a href={wa} target="_blank" rel="noopener">{t.ui.whatsappFull}<span class="visually-hidden"> {t.ui.newWindow}</span></a></li>}
+          <li><Icon name="mail" /><a href={`mailto:${site.contact.email}`}><bdi dir="ltr">{site.contact.email}</bdi></a></li>
         </ul>
-      </div>
+      </section>
 
-      <div>
-        <h2 id="f-hours">{t.ui.hours}</h2>
+      <section class="f-col" aria-labelledby="f-hours">
+        <h2 id="f-hours" class="f-h">{t.ui.hours}</h2>
         <Hours ctx={ctx} compact />
-      </div>
+      </section>
 
-      <nav aria-labelledby="f-nav">
-        <h2 id="f-nav">{t.ui.footerNav}</h2>
-        <ul class="footer-list" role="list">
-          {links.map((p) => <li><a href={href(ctx, p)}>{t.ui.nav[p]}</a></li>)}
-        </ul>
-      </nav>
     </div>
 
-    <div class="footer-a11y">
-      <a class="a11y-badge" href={href(ctx, 'accessibility')}>
-        <Icon name="access" />
-        <span>{t.ui.accessibleSiteLong}</span>
+    <div class="f-bottom">
+      <a class="f-a11y" href={href(ctx, 'accessibility')}>
+        <span class="f-a11y-icon"><Icon name="access" /></span>
+        <span class="f-a11y-text">
+          <strong>{t.ui.accessibleSiteLong}</strong>
+          <span>{t.ui.nav.accessibility} · {t.ui.statementUpdated} <time datetime={site.accessibility.statementUpdated}>{formatDate(site.accessibility.statementUpdated, lang)}</time></span>
+        </span>
       </a>
-      <span class="footer-small">
-        {t.ui.statementUpdated}: <time datetime={site.accessibility.statementUpdated}>{formatDate(site.accessibility.statementUpdated, lang)}</time>
-      </span>
-      <a href={href(ctx, 'privacy')}>{t.ui.nav.privacy}</a>
+      <div class="f-fine">
+        <p class="f-disclaimer">{t.ui.medicalDisclaimer}</p>
+        <div class="f-legal">
+          <p>© {year} {t.doctor.fullName}. {t.ui.rights}.</p>
+          <ul class="f-legal-links" role="list">
+            {legal.map((p) => <li><a href={href(ctx, p)}>{t.ui.nav[p]}</a></li>)}
+            <li><span>{t.ui.photoCredit}</span></li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <p class="footer-small footer-legal">{t.ui.medicalDisclaimer}</p>
-    <p class="footer-small footer-legal">© {year} {t.doctor.fullName}. {t.ui.rights}. · {t.ui.photoCredit}</p>
   </div>
   <ContactFabs ctx={ctx} />
 </footer>
 
 <style>
-  .footer-legal { margin-block-start: var(--space-s); max-inline-size: 60em; }
-  .site-footer :global(.hours th), .site-footer :global(.hours td) { border-color: color-mix(in oklch, currentColor 20%, transparent); }
-  .site-footer :global(.hours .is-closed) { color: inherit; opacity: 0.8; }
-  .site-footer :global(.license) { color: inherit; opacity: 0.9; margin-block-start: var(--space-s); }
+  /* Footer colours come from --footer-bg / --footer-fg (themes.css). Secondary text is a solid mix of the
+     two, never an opacity fade, so every line stays above 4.5:1 in all five templates. */
+  .site-footer {
+    --f-fg: var(--footer-fg, var(--bg));
+    --f-bg: var(--footer-bg, var(--fg));
+    --f-soft: color-mix(in oklch, var(--f-fg) 84%, var(--f-bg));
+    --f-line: color-mix(in oklch, var(--f-fg) 24%, var(--f-bg));
+  }
+
+  /* Three clear columns: 3 → 2 → 1 */
+  .footer-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2xl) var(--space-xl);
+  }
+  @media (min-width: 40rem) { .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 64rem) { .footer-grid { grid-template-columns: 1.15fr 1.15fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); } }
+
+  .f-col { display: flex; flex-direction: column; gap: var(--space-s); min-inline-size: 0; }
+  .f-h {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.4;
+    color: var(--f-soft);
+    padding-block-end: var(--space-s);
+    margin-block-end: var(--space-xs);
+    border-block-end: 1px solid var(--f-line);
+  }
+  .f-name { font-size: var(--step-2); font-family: var(--font-display); font-weight: var(--display-weight); letter-spacing: var(--display-tracking); line-height: 1.2; }
+  .f-spec { color: var(--f-soft); }
+
+  .f-license { display: grid; gap: 0.25rem; margin-block-start: var(--space-xs); font-variant-numeric: tabular-nums; }
+  .f-license div { display: flex; gap: 0.5em; }
+  .f-license dt { color: var(--f-soft); }
+  .f-license dd { margin: 0; font-weight: 600; }
+  .f-link { align-self: start; display: inline-flex; align-items: center; min-block-size: 2.75rem; }
+
+  .f-rows { display: grid; gap: 0; }
+  .f-rows li { display: grid; grid-template-columns: 1.375rem minmax(0, 1fr); gap: 0.75rem; align-items: center; min-block-size: 2.75rem; padding-block: 0.3rem; }
+  .f-rows :global(svg) { inline-size: 1.25rem; block-size: 1.25rem; color: var(--f-soft); }
+  .f-rows li:first-child { align-items: start; }
+  .f-rows li:first-child :global(svg) { margin-block-start: 0.25em; }
+  .f-rows a { display: inline-flex; align-items: center; min-block-size: 2.75rem; overflow-wrap: anywhere; }
+
+  .site-footer :global(.hours th), .site-footer :global(.hours td) { border-color: var(--f-line); padding-block: 0.3rem; block-size: 2.75rem; }
+  .site-footer :global(.hours tr:last-child th), .site-footer :global(.hours tr:last-child td) { border-block-end: 0; }
+  .site-footer :global(.hours .is-closed) { color: var(--f-soft); }
+
+  /* Links: text links are underlined at rest; rows with an icon underline on hover and focus. */
+  .site-footer a:not(.f-a11y) { text-decoration: none; }
+  .site-footer a:not(.f-a11y):is(:hover, :focus-visible) { text-decoration: underline; text-underline-offset: 0.25em; }
+  .site-footer .f-link, .site-footer .f-legal-links a { text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: color-mix(in oklch, var(--f-fg) 55%, var(--f-bg)); text-underline-offset: 0.25em; }
+  .site-footer .f-link:hover, .site-footer .f-legal-links a:hover { text-decoration-color: currentColor; }
+
+  /* One bottom section: accessibility badge | disclaimer + legal line */
+  .f-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-l) var(--space-2xl);
+    align-items: center;
+    margin-block-start: var(--space-2xl);
+    padding-block-start: var(--space-xl);
+    border-block-start: 1px solid var(--f-line);
+  }
+  .f-a11y {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-s);
+    padding-block: 0.75rem;
+    padding-inline: 0.75rem 1.5rem;
+    border: 1.5px solid currentColor;
+    border-radius: 999px;
+    text-decoration: none;
+    flex: 0 1 auto;
+    max-inline-size: min(100%, 31rem);
+  }
+  .f-a11y-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .f-a11y-icon :global(svg) { inline-size: 1.6rem; block-size: 1.6rem; color: var(--f-bg); }
+  .f-a11y-text { display: grid; gap: 0.1rem; line-height: 1.4; text-wrap: balance; }
+  .f-a11y-text strong { font-weight: 600; }
+  .f-a11y-text span { color: var(--f-soft); font-size: var(--f-small); }
+  .f-a11y:hover strong { text-decoration: underline; text-underline-offset: 0.2em; }
+
+  .site-footer { --f-small: max(0.9375rem, 0.92em); }
+  .f-fine { flex: 1 1 24rem; min-inline-size: 0; display: grid; gap: var(--space-xs); padding-inline-end: 4.5rem; /* clear the floating call/WhatsApp buttons */ font-size: var(--f-small); line-height: 1.6; color: var(--f-soft); }
+  .f-disclaimer { max-inline-size: 64ch; color: var(--f-fg); }
+  .f-legal { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--space-l); }
+  .f-legal-links { display: flex; flex-wrap: wrap; gap: 0 var(--space-l); align-items: center; }
+  .f-legal-links a { display: inline-flex; align-items: center; min-block-size: 2.75rem; color: var(--f-fg); }
+  @media (max-width: 30rem) { .f-fine { padding-inline-end: 0; } .site-footer { padding-block-end: 9.5rem; } }
 </style>

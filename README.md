@@ -1,6 +1,6 @@
 # Doctor clinic website template
 
-A white-label website for a doctor's private clinic in Israel. Hebrew first (RTL), English second, three layouts, built to Israeli accessibility law.
+A white-label website for a doctor's private clinic in Israel. Hebrew first (RTL), English second, five layouts, built to Israeli accessibility law.
 
 ## Run it
 
@@ -9,24 +9,26 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:4321. The bar at the top switches between the three layouts (showcase mode).
+Open http://localhost:4321. The bar at the top switches between the five layouts (showcase mode).
 
-## The three layouts
+## The five layouts
 
 | | Layout | Best for | Reference |
 | --- | --- | --- | --- |
 | A | **Clinic** (`clinic`) | Booking first: quick facts, services grid, insurance, FAQ | drgrubermaayan.co.il |
 | B | **Profile** (`editorial`) | Senior or academic doctors whose CV sells: serif, timeline, index | royhod.com, remermd.com |
 | C | **Family** (`warm`) | Paediatric and family practices: soft shapes, clinic access up front | katzclinic.co.il |
+| D | **Landing** (`landing`) | SaaS-style landing page: book button, facts and trust bar up front | — |
+| E | **Journey** (`journey`) | Calm premium look, soft colour washes, scroll-driven first-visit path | reference video in `ref/` |
 
-All three share the inner pages: about, services, appointment, accessibility statement, privacy policy.
+All five share the inner pages: about, services, appointment, accessibility statement, privacy policy.
 
 ## Make a site for a clinic
 
 1. **`src/site.config.ts`**: pick `template`, set `showcase: false`, fill phones, license numbers, hours, address, accessibility contact and physical access.
 2. **`src/content/he.ts`** and **`src/content/en.ts`**: every text on the site. TypeScript flags anything missing.
 3. **Photos**: put the clinic's own photos in `public/images/` and point `images` in the config at them (`src: '/images/portrait.jpg'`). The starter photos are hotlinked from Unsplash (free licence) and are placeholders only.
-4. **Form**: set `contact.formEndpoint` (Formspree, Web3Forms or your own API), or `contact.bookingUrl` for an external booking system. With neither, the form opens an email draft.
+4. **Form**: set `contact.formEndpoint` (Formspree, Web3Forms or your own API), or `contact.bookingUrl` to link to the clinic's own booking system (Israeli options: Medform, Klinix, Tipulog; name it in `contact.bookingProvider`). Every book button then opens it in a new window; embeds are not recommended because their accessibility is unverified. With neither, book buttons go to our request form, which opens an email draft.
 5. **Check**: `npm run check:launch`. It fails on leftover demo values or showcase mode, and warns on wording the advertising rules forbid.
 6. **Build**: `npm run build` → static files in `dist/`, ready for any static host (Netlify, Vercel, Cloudflare Pages).
 
@@ -40,14 +42,14 @@ Built in:
 
 - `lang` and `dir` on every page; logical CSS so one stylesheet serves RTL and LTR.
 - Skip link, landmarks, one `h1` per page, visible focus, 44px targets.
-- Text contrast 4.5:1 or more in all three palettes.
+- Text contrast 4.5:1 or more in all five palettes.
 - Reflows at 320px and at 200% text with no horizontal scroll; respects reduced motion.
 - Accessible form: labels, text errors tied to fields, error summary, no CAPTCHA.
 - Accessibility statement page with the reg. 35ה contents, linked from the header, footer and panel.
-- Clear "accessible site" indication: an accessibility button on every page, a footer badge and a header link.
+- Clear "accessible site" indication: a footer badge and a header link to the accessibility statement, which also opens the display-settings panel.
 - A native accessibility panel (text size, contrast, greyscale, links, readable font, spacing, stop motion, focus). No third-party overlay: the Commission says toolbars are optional and never replace real compliance.
 
-Verified: axe-core finds 0 WCAG 2.0–2.2 A/AA violations on 18 pages across the three layouts and both languages.
+Verified: axe-core finds 0 WCAG 2.0–2.2 A/AA violations on the home pages of all five layouts in both languages, plus the shared inner pages.
 
 Still needed before launch (manual):
 
@@ -75,11 +77,11 @@ The form collects only name, phone, topic and preferred time, with a notice and 
 ```
 src/site.config.ts      one file per clinic: data, template, images
 src/content/he.ts, en.ts all text, one file per language
-src/templates/          the three home layouts
+src/templates/          the five home layouts
 src/views/              shared inner pages
 src/components/         header, footer, accessibility panel, form, …
 src/styles/base.css     reset, tokens, accessibility modes
-src/styles/themes.css   the three palettes and type
+src/styles/themes.css   the five palettes and type
 src/pages/[...path].astro  one router: page × language × template
 scripts/prelaunch-check.mjs
 ```

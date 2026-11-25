@@ -1,0 +1,50 @@
+---
+/**
+ * Abstract line drawing for a treatment card: thin rings and dotted paths over a soft orb.
+ * Decorative only. Three variants, cycled by index, so it works for any clinic's list of treatments.
+ */
+interface Props { variant?: number }
+const v = (Astro.props.variant ?? 0) % 3;
+---
+<svg class="orb" viewBox="0 0 320 200" aria-hidden="true" focusable="false" data-decor>
+  {v === 0 && (
+    <>
+      <circle class="orb-core" cx="160" cy="100" r="34" />
+      <g class="orb-spin">
+        <circle class="orb-line" cx="160" cy="100" r="54" />
+        <circle class="orb-line" cx="160" cy="100" r="76" />
+        <circle class="orb-dots" cx="160" cy="100" r="100" />
+        <circle class="orb-dot" cx="236" cy="100" r="3.5" />
+      </g>
+    </>
+  )}
+  {v === 1 && (
+    <>
+      <circle class="orb-core" cx="194" cy="100" r="50" />
+      <g class="orb-spin">
+        <circle class="orb-line" cx="130" cy="100" r="50" />
+        <circle class="orb-line" cx="194" cy="100" r="50" />
+        <path class="orb-dots" d="M20 132c40-34 62 30 104 0s62-74 104-40 50 24 76 4" />
+        <circle class="orb-dot" cx="162" cy="62" r="3.5" />
+      </g>
+    </>
+  )}
+  {v === 2 && (
+    <>
+      <path class="orb-core" d="M160 40a60 60 0 1 0 52 90 48 48 0 1 1-52-90Z" />
+      <g class="orb-spin">
+        <circle class="orb-line" cx="160" cy="100" r="60" />
+        <ellipse class="orb-dots" cx="160" cy="100" rx="118" ry="44" />
+        <circle class="orb-dot" cx="264" cy="121" r="3.5" />
+      </g>
+    </>
+  )}
+</svg>
+<style>
+  .orb { inline-size: 100%; block-size: 100%; overflow: visible; }
+  .orb-core { fill: var(--orb-core, #fff); }
+  .orb-line, .orb-dots { fill: none; stroke: currentColor; stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .orb-dots { stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 0.1 7; }
+  .orb-dot { fill: currentColor; }
+  .orb-spin { transform-box: view-box; transform-origin: 50% 50%; }
+</style>

@@ -30,6 +30,7 @@ const en: Content = {
     closeMenu: 'Close menu',
     mainNav: 'Main navigation',
     footerNav: 'Site links',
+    footerClinic: 'The clinic',
     book: 'Book an appointment',
     bookShort: 'Book',
     call: 'Call',
@@ -77,6 +78,7 @@ const en: Content = {
     opens: 'Opens',
     today: 'today',
     tomorrow: 'tomorrow',
+    trustTitle: 'License, specialty and insurance',
     backHome: 'Back to the home page',
   },
 
@@ -272,8 +274,13 @@ const en: Content = {
     'detail-desk': 'A desk in the clinic',
     'exterior-1': 'The building where the clinic is located',
     'exterior-2': 'A city street',
+    'building-tlv': 'A white Bauhaus-style building in Tel Aviv, surrounded by trees',
+    'waiting-corner': 'A bright waiting corner with a table, chairs and a plant',
+    'exam-otoscope': 'An otoscope for ear examinations on the examination room wall',
+    'teddy-otoscope': 'A teddy bear having its ear examined with an otoscope',
     'texture-1': '',
     'texture-2': '',
+    'abstract-violet': '',
   },
 
   /** Accessibility statement (Regulation 35ה). Physical items and contacts come from site.config.ts. */
@@ -303,7 +310,7 @@ const en: Content = {
       'The site was tested with the axe-core automated checker, keyboard-only navigation, 200% text zoom and a 320px-wide screen, in Chrome and Safari.',
     toolbarTitle: 'Accessibility menu',
     toolbar:
-      'Every page has an "Accessibility" button that opens additional settings: text size, high contrast, grayscale, link highlighting, readable font, text spacing and stopping animations. The menu is an added convenience, and the site is accessible without it too.',
+      'From this page you can open additional display settings: text size, high contrast, grayscale, link highlighting, readable font, text spacing and stopping animations. The settings apply to every page of the site. They are an added convenience, and the site is accessible without them too.',
     gapsTitle: 'Parts that are not fully accessible',
     gaps: [
       'Links to external sites (maps, the appointment booking system, social networks) are not under the clinic’s control.',
@@ -380,7 +387,36 @@ const en: Content = {
     ],
   },
 
-  templates: { clinic: 'Clinical', editorial: 'Profile', warm: 'Family' },
+  templates: { clinic: 'Clinical', editorial: 'Profile', warm: 'Family', landing: 'Landing', journey: 'Journey' },
+
+  journey: {
+    heroLabel: 'Private ENT clinic',
+    heroLines: ['Ear, nose and throat', 'care for all ages'],
+    credTitle: 'Training and experience',
+    visitIntro: 'From the first call to the written summary, so you know what to expect before you arrive.',
+    bookFirst: 'Book a first appointment',
+    factsLabel: 'The clinic at a glance',
+    specialtyLabel: 'Specialty',
+    allHours: 'All opening hours',
+    aboutLabel: 'About the clinic',
+    treatmentsLabel: 'Treatments',
+    treatmentsTitle: 'How we can help',
+    whyLabel: 'Why this clinic',
+    whyTitle: 'A calm visit, a clear explanation',
+    goodToKnow: 'Good to know',
+    pathLabel: 'Your first visit',
+    pathTitle: 'Your visit, step by step',
+    pathEnd: 'You can ask anything, at any stage. We will find a time that suits you.',
+    doctorLabel: 'The doctor',
+    doctorWords: 'I want you to leave the visit knowing what I found and what the next step is.',
+    faqLabel: 'Your questions, answered',
+    locationLabel: 'Getting here',
+    ctaLabel: 'The first step',
+    ctaTitle: 'It all starts with a conversation',
+    ctaText: 'Book by phone, on WhatsApp or with the form on this site, and we will get back to you within one working day.',
+    readyTitle: 'Ready to book a visit?',
+    alsoLabel: 'Also at the clinic',
+  },
 };
 
 export default en;

@@ -1,12 +1,12 @@
 ---
 import { site } from '../site.config';
-import { href, whatsappHref, type Ctx } from '../i18n';
+import { href, whatsappHref, type Ctx, bookLink } from '../i18n';
 import Icon from './Icon.astro';
 interface Props { ctx: Ctx; title?: string }
 const { ctx, title } = Astro.props;
 const { t } = ctx;
 const wa = whatsappHref();
-const bookHref = site.contact.bookingUrl || href(ctx, 'appointment');
+const book = bookLink(ctx);
 ---
 <section class="cta-band tone-dark" aria-labelledby="cta-h">
   <div class="wrap cta-row">
@@ -15,7 +15,7 @@ const bookHref = site.contact.bookingUrl || href(ctx, 'appointment');
       <p>{t.appointment.intro}</p>
     </div>
     <div class="cta-actions">
-      {ctx.page !== 'appointment' && <a class="btn btn-on-dark" href={bookHref}><Icon name="calendar" />{t.ui.book}</a>}
+      {ctx.page !== 'appointment' && <a class="btn btn-on-dark" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}><Icon name="calendar" />{t.ui.book}{book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}</a>}
       <a class="btn btn-ghost-dark" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /><span dir="ltr">{site.contact.phone}</span></a>
       {wa && <a class="btn btn-ghost-dark" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span></a>}
     </div>

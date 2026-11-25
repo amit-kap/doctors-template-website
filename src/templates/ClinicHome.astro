@@ -4,7 +4,7 @@
  * Booking above the fold, quick facts strip, services grid, visit steps, insurance, FAQ, contact.
  */
 import { site } from '../site.config';
-import { href, whatsappHref, wazeHref, type Ctx } from '../i18n';
+import { href, whatsappHref, wazeHref, type Ctx, bookLink } from '../i18n';
 import Icon from '../components/Icon.astro';
 import Img from '../components/Img.astro';
 import Hours from '../components/Hours.astro';
@@ -19,7 +19,7 @@ const { ctx } = Astro.props;
 const { t } = ctx;
 const d = t.doctor;
 const wa = whatsappHref();
-const bookHref = site.contact.bookingUrl || href(ctx, 'appointment');
+const book = bookLink(ctx);
 const icons: Record<string, string> = { ears: 'ear', tubes: 'ear', tonsils: 'child' };
 ---
 <section class="hero">
@@ -29,7 +29,7 @@ const icons: Record<string, string> = { ears: 'ear', tubes: 'ear', tonsils: 'chi
       <h1>{d.headline}</h1>
       <p class="lead">{d.intro}</p>
       <div class="hero-cta">
-        <a class="btn btn-primary btn-lg" href={bookHref}><Icon name="calendar" />{t.ui.book}</a>
+        <a class="btn btn-primary btn-lg" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}><Icon name="calendar" />{t.ui.book}{book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}</a>
         <a class="btn btn-outline btn-lg" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /><span dir="ltr">{site.contact.phone}</span></a>
         {wa && <a class="btn btn-quiet btn-lg" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span></a>}
       </div>

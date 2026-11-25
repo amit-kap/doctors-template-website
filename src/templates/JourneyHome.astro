@@ -1,0 +1,1110 @@
+---
+/**
+ * E · JOURNEY — calm, premium "patient journey" home.
+ *
+ * Order: hero · about (portrait) · treatments · first visit (sticky progress + step cards) ·
+ * training and experience · FAQ · location and hours · closing call to action.
+ *
+ * Layout system: one 5 / 7 split (headings on the start edge, content on the 7-column edge),
+ * two section paddings (--j-sec, --j-sec-s), two radii (--j-r-l panels and photos, --j-r-m cards),
+ * one hairline (--j-hair). Type roles and their Hebrew values are tokens in themes.css.
+ *
+ * Motion: one language (rise 28px, mask-open for photos, slow parallax). Scroll-scrubbed with CSS
+ * view() / scroll() timelines where supported, IntersectionObserver otherwise. transform, opacity and
+ * clip-path only. Runs only with prefers-reduced-motion: no-preference and without the a11y "stop
+ * motion" setting, and never hides content without JS (.jh-js is set by an inline script).
+ *
+ * No testimonials, numbers, prices or superlatives (Physicians Regulations, Prohibited Advertising, 2008).
+ */
+import { site } from '../site.config';
+import { href, latin, whatsappHref, wazeHref, mapsHref, type Ctx, bookLink } from '../i18n';
+import Icon from '../components/Icon.astro';
+import Img from '../components/Img.astro';
+import OpenNow from '../components/OpenNow.astro';
+import Hours from '../components/Hours.astro';
+import License from '../components/License.astro';
+import Faq from '../components/Faq.astro';
+import Arrow from './journey/Arrow.astro';
+import Orb from './journey/Orb.astro';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+const d = t.doctor;
+const j = t.journey;
+const wa = whatsappHref();
+const book = bookLink(ctx);
+const bookAttrs = { href: book.href, target: book.external ? '_blank' : undefined, rel: book.external ? 'noopener' : undefined };
+const steps = t.visit;
+const pad = (n: number) => String(n).padStart(2, '0');
+// Step 1 (booking) shows the ways to book instead of a photo. The other steps get one photo each, cycled.
+const stepImages = ['waiting-corner', 'exam-otoscope', 'detail-stethoscope'];
+const stepFocus = ['50% 70%', '42% 55%', '50% 40%'];
+const treatments = t.services.slice(0, 3);
+const moreTreatments = t.services.slice(3);
+const physical = Object.entries(site.accessibility.physical) as [keyof typeof t.statement.physicalLabels, boolean][];
+const alternatives = t.statement.physicalAlternatives as Partial<Record<string, string>>;
+---
+<script is:inline>document.documentElement.classList.add('jh-js');</script>
+
+<section class="jh-hero" aria-labelledby="hero-h" data-jh-hero>
+  <div class="jh-stage" data-jh-stage>
+    <div class="jh-bg" aria-hidden="true">
+      <Img ctx={ctx} name="abstract-violet" decorative eager width={2000} height={1333} sizes="100vw" />
+    </div>
+
+    <div class="jh-body">
+      <p class="jh-label jh-in" style="--d:0">{j.heroLabel}<span class="jh-sep" aria-hidden="true"></span>{t.address.city}</p>
+      <h1 id="hero-h" class="jh-h1">
+        {j.heroLines.map((line, i) => (
+          <><span class="jh-line"><span style={`--i:${i}`}>{line}</span></span>{i < j.heroLines.length - 1 ? ' ' : ''}</>
+        ))}
+      </h1>
+      <p class="jh-intro jh-in" style="--d:1">{d.intro}</p>
+      <div class="jh-cta jh-in" style="--d:2">
+        <a class="btn jh-pill jh-pill-light" {...bookAttrs}>
+          {j.bookFirst}<Arrow />{book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}
+        </a>
+        <a class="btn jh-pill jh-pill-glass" href={`tel:${site.contact.phoneHref}`}>
+          <Icon name="phone" /><span class="visually-hidden">{t.ui.callFull}: </span><span dir="ltr">{site.contact.phone}</span>
+        </a>
+        {wa && (
+          <a class="btn jh-pill jh-pill-glass" href={wa} target="_blank" rel="noopener">
+            <Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span>
+          </a>
+        )}
+      </div>
+    </div>
+
+    <ul class="jh-facts jh-in" style="--d:3" role="list" aria-label={j.factsLabel}>
+      <li>
+        <span class="jh-fact-k">{j.specialtyLabel}</span>
+        <span class="jh-fact-v">{d.specialty}</span>
+      </li>
+      <li>
+        <span class="jh-fact-k">{t.ui.address}</span>
+        <span class="jh-fact-v">{t.address.street}, {t.address.city}</span>
+        <a class="jh-fact-a" href={wazeHref()} target="_blank" rel="noopener">{t.ui.openWaze}<Arrow /><span class="visually-hidden"> {t.ui.newWindow}</span></a>
+      </li>
+      <li>
+        <span class="jh-fact-k">{t.ui.hours}</span>
+        <OpenNow ctx={ctx} class="jh-fact-v jh-open" />
+        <a class="jh-fact-a" href="#jx-hours">{j.allHours}</a>
+      </li>
+      <li>
+        <span class="jh-fact-k">{t.ui.insuranceTitle}</span>
+        <span class="jh-fact-v jh-fact-ins">{t.insurance.items.map((item, i) => <><span class="jh-nw">{item}</span>{i < t.insurance.items.length - 1 ? ' · ' : ''}</>)}</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="jx-about" aria-labelledby="about-h">
+  <div class="jx-ghost" aria-hidden="true" data-decor data-word={d.name}></div>
+  <div class="wrap jx-about-grid">
+    <div class="jx-about-text">
+      <h2 id="about-h" class="jh-label" data-rise>{j.aboutLabel}</h2>
+      <p class="jx-statement" data-rise style="--k:1">{d.shortBio}</p>
+      <div class="jx-about-foot" data-rise style="--k:2">
+        <p class="jx-about-more">{d.bio[2] ?? d.philosophy}</p>
+        <div class="jx-about-act">
+          <a class="btn jh-pill jh-pill-dark" href={href(ctx, 'about')}>{t.ui.aboutMore}<Arrow /></a>
+          <License ctx={ctx} />
+        </div>
+      </div>
+    </div>
+    <figure class="jx-portrait">
+      <div class="jx-mask" data-wipe>
+        <Img ctx={ctx} name={site.doctor.portrait} width={900} height={1100} sizes="(max-width: 48rem) 92vw, 32rem" />
+      </div>
+      <figcaption data-rise>
+        <span class="jx-cap-n">{d.fullName}</span>
+        <span class="jx-cap-s">{d.specialty}</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="jx-treat" aria-labelledby="treat-h">
+  <div class="wrap">
+    <div class="jx-head jx-head-row" data-rise>
+      <div class="jx-head-main">
+        <p class="jh-label">{j.treatmentsLabel}</p>
+        <h2 id="treat-h" class="jx-h2">{j.treatmentsTitle}</h2>
+      </div>
+      <a class="jx-link" href={href(ctx, 'services')}>{t.ui.allServices}<Arrow /></a>
+    </div>
+    <ul class="jx-cards" role="list">
+      {treatments.map((s, i) => (
+        <li class="jx-card" data-rise style={`--k:${i}`}>
+          <div class="jx-card-art" data-tone={i % 3} aria-hidden="true"><Orb variant={i} /></div>
+          <h3>{s.title}</h3>
+          <p class="jx-card-sum">{s.summary}</p>
+          <ul class="jx-card-list" role="list">
+            {s.details.slice(0, 3).map((x) => <li>{x}</li>)}
+          </ul>
+          <a class="jx-link" href={href(ctx, 'services', ctx.lang, `#${s.id}`)}>
+            {t.ui.readMore}<span class="visually-hidden">: {s.title}</span><Arrow />
+          </a>
+        </li>
+      ))}
+    </ul>
+    {moreTreatments.length > 0 && (
+      <div class="jx-more" data-rise>
+        <h3 class="jx-more-k">{j.alsoLabel}</h3>
+        <ul class="jx-more-list" role="list">
+          {moreTreatments.map((s) => (
+            <li><a class="jx-chip" href={href(ctx, 'services', ctx.lang, `#${s.id}`)}>{s.title}<Arrow /></a></li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+</section>
+
+<section class="jv" aria-labelledby="visit-h" data-jv style={`--n:${steps.length}`}>
+  <div class="jv-wash" aria-hidden="true" data-decor><span></span><span></span><span></span></div>
+
+  <div class="wrap jx-split jv-grid">
+    <div class="jv-side">
+      <div class="jv-sticky" data-rise>
+        <p class="jh-label">{j.pathLabel}</p>
+        <h2 id="visit-h" class="jx-h2">{j.pathTitle}</h2>
+        <p class="jx-lead">{j.visitIntro}</p>
+
+        <div class="jv-progress" aria-hidden="true">
+          <p class="jv-count" dir="ltr">
+            <span class="jv-count-now" data-jv-now>{pad(1)}</span><span class="jv-count-total">/ {pad(steps.length)}</span>
+          </p>
+          <div class="jv-rail">
+            <span class="jv-rail-fill"></span>
+            {steps.map((s, i) => (
+              <span class="jv-node" data-jv-node={i}><span class="jv-node-dot"></span><span class="jv-node-t">{s.title}</span></span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ol class="jv-steps" role="list">
+      {steps.map((s, i) => (
+        <li class="jv-step" data-jv-step={i} data-rise>
+          <div class="jv-body">
+            <span class="jv-num" aria-hidden="true">{pad(i + 1)}</span>
+            <div class="jv-copy">
+              <h3>{s.title}</h3>
+              <p>{s.text}</p>
+            </div>
+          </div>
+          {i === 0 ? (
+            <div class="jv-media jv-ways">
+              <a class="btn jh-pill jh-pill-dark" {...bookAttrs}>
+                {t.ui.book}<Arrow />{book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}
+              </a>
+              <a class="btn jh-pill jh-pill-line" href={`tel:${site.contact.phoneHref}`}>
+                <Icon name="phone" /><span class="visually-hidden">{t.ui.callFull}: </span><span dir="ltr">{site.contact.phone}</span>
+              </a>
+              {wa && (
+                <a class="btn jh-pill jh-pill-line" href={wa} target="_blank" rel="noopener">
+                  <Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span>
+                </a>
+              )}
+            </div>
+          ) : (
+            <div class="jv-media" style={`--pos:${stepFocus[(i - 1) % stepFocus.length]}`}>
+              <Img ctx={ctx} name={stepImages[(i - 1) % stepImages.length]} decorative width={800} height={1000} sizes="(max-width: 48rem) 92vw, 18rem" />
+            </div>
+          )}
+        </li>
+      ))}
+    </ol>
+  </div>
+
+  <div class="wrap jv-end" data-rise>
+    <p>{j.pathEnd}</p>
+    <a class="btn jh-pill jh-pill-dark" {...bookAttrs}>
+      {j.bookFirst}<Arrow />{book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}
+    </a>
+  </div>
+</section>
+
+<section class="jx-cred" aria-labelledby="cred-h">
+  <div class="wrap">
+    <div class="jx-head jx-split" data-rise>
+      <div class="jx-head-main">
+        <p class="jh-label">{j.doctorLabel}</p>
+        <h2 id="cred-h" class="jx-h2">{j.credTitle}</h2>
+      </div>
+      <p class="jx-cred-quote">{d.philosophy}</p>
+    </div>
+    <div class="jx-ledger">
+      <div class="jx-group jx-split" data-rise>
+        <h3>{t.ui.credentialsTitle}</h3>
+        <ul class="jx-rows" role="list">
+          {d.education.map((e) => (
+            <li><span class="jx-year"><span dir="ltr">{e.year}</span></span><span class="jx-row-main"><span class="jx-row-t" set:html={latin(e.title, ctx.lang)} /><span class="jx-row-p">{e.place}</span></span></li>
+          ))}
+        </ul>
+      </div>
+      <div class="jx-group jx-split" data-rise>
+        <h3>{t.ui.positionsTitle}</h3>
+        <ul class="jx-rows" role="list">
+          {d.positions.map((e) => (
+            <li><span class="jx-year">{e.year}</span><span class="jx-row-main"><span class="jx-row-t">{e.title}</span><span class="jx-row-p">{e.place}</span></span></li>
+          ))}
+        </ul>
+      </div>
+      <div class="jx-group jx-split" data-rise>
+        <h3>{t.ui.membershipsTitle}</h3>
+        <ul class="jx-rows jx-rows-plain" role="list">{d.memberships.map((m) => <li>{m}</li>)}</ul>
+      </div>
+      <div class="jx-group jx-split" data-rise>
+        <h3>{t.ui.languagesSpoken}</h3>
+        <ul class="jx-tags" role="list">{d.languages.map((l) => <li>{l}</li>)}</ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="jx-faq" aria-labelledby="faq-h">
+  <div class="jx-faq-panel" data-grow>
+    <div class="wrap jx-faq-inner">
+      <div class="jx-head jx-head-center" data-rise>
+        <p class="jh-label">{j.faqLabel}</p>
+        <h2 id="faq-h" class="jx-h2">{t.ui.faqTitle}</h2>
+      </div>
+      <div data-rise style="--k:1"><Faq ctx={ctx} /></div>
+    </div>
+  </div>
+</section>
+
+<section class="jx-loc" aria-labelledby="loc-h">
+  <div class="wrap">
+    <div class="jx-head" data-rise>
+      <p class="jh-label">{j.locationLabel}</p>
+      <h2 id="loc-h" class="jx-h2">{t.ui.directions}</h2>
+    </div>
+    <div class="jx-split jx-loc-grid">
+      <figure class="jx-loc-photo">
+        <div class="jx-mask" data-wipe data-par>
+          <Img ctx={ctx} name="building-tlv" decorative width={1200} height={1500} sizes="(max-width: 56rem) 92vw, 30rem" />
+        </div>
+      </figure>
+      <div class="jx-book">
+        <div class="jx-entry" data-rise>
+          <h3>{t.ui.address}</h3>
+          <div class="jx-entry-body">
+            <p class="jx-big">{t.address.street}, {t.address.city}</p>
+            <p class="jx-muted">{t.address.notes}</p>
+            <div class="jx-pills">
+              <a class="btn jh-pill jh-pill-dark" href={wazeHref()} target="_blank" rel="noopener">{t.ui.openWaze}<Arrow /><span class="visually-hidden"> {t.ui.newWindow}</span></a>
+              <a class="btn jh-pill jh-pill-line" href={mapsHref()} target="_blank" rel="noopener">{t.ui.openMaps}<Arrow /><span class="visually-hidden"> {t.ui.newWindow}</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="jx-entry" id="jx-hours" tabindex="-1" data-rise>
+          <h3>{t.ui.hours}</h3>
+          <div class="jx-entry-body">
+            <OpenNow ctx={ctx} class="jx-open" />
+            <Hours ctx={ctx} />
+            <a class="jx-phone" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /><span class="visually-hidden">{t.ui.callFull}: </span><span dir="ltr">{site.contact.phone}</span></a>
+          </div>
+        </div>
+        <div class="jx-entry" data-rise>
+          <h3>{t.statement.physicalTitle}</h3>
+          <ul class="jx-access jx-entry-body" role="list">
+            {physical.map(([key, ok]) => (
+              <li data-ok={ok ? '' : undefined}>
+                <Icon name={ok ? 'check' : 'close'} />
+                <span>
+                  {t.statement.physicalLabels[key]}<span class="visually-hidden">: {ok ? t.statement.yes : t.statement.no}</span>
+                  {!ok && alternatives[key] && <span class="jx-alt">{alternatives[key]}</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="jx-cta" aria-labelledby="cta-h">
+  <div class="jx-cta-card" data-grow>
+    <div class="jx-cta-body">
+      <p class="jh-label" data-rise>{j.ctaLabel}</p>
+      <h2 id="cta-h" data-rise style="--k:1">{j.ctaTitle}</h2>
+      <p class="jx-cta-text" data-rise style="--k:2">{j.ctaText}</p>
+      <div class="jx-pills" data-rise style="--k:3">
+        <a class="btn jh-pill jh-pill-light" {...bookAttrs}>
+          {j.bookFirst}<Arrow />{book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}
+        </a>
+        <a class="btn jh-pill jh-pill-glass" href={`tel:${site.contact.phoneHref}`}>
+          <Icon name="phone" /><span class="visually-hidden">{t.ui.callFull}: </span><span dir="ltr">{site.contact.phone}</span>
+        </a>
+        {wa && (
+          <a class="btn jh-pill jh-pill-glass" href={wa} target="_blank" rel="noopener">
+            <Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span>
+          </a>
+        )}
+      </div>
+    </div>
+    <figure class="jx-cta-photo">
+      <div class="jx-mask" data-par>
+        <Img ctx={ctx} name="teddy-otoscope" width={1600} height={900} sizes="(max-width: 56rem) 92vw, 34rem" />
+      </div>
+    </figure>
+  </div>
+</section>
+
+
+<script>
+  const root = document.documentElement;
+  const motionMq = matchMedia('(prefers-reduced-motion: no-preference)');
+  const motionOk = () => motionMq.matches && !root.hasAttribute('data-a11y-motion');
+  const sdt = CSS.supports('animation-timeline: view()');
+  const clamp = (v: number) => Math.min(1, Math.max(0, v));
+
+  // ---------- Hero: scroll parallax fallback (browsers without scroll-driven animations) ----------
+  const hero = document.querySelector<HTMLElement>('[data-jh-hero]');
+  const stage = hero?.querySelector<HTMLElement>('[data-jh-stage]');
+  const bgImg = hero?.querySelector<HTMLElement>('.jh-bg img');
+
+  // ---------- First visit: active step, counter, progress (scrubbed by scroll position) ----------
+  const sec = document.querySelector<HTMLElement>('[data-jv]');
+  const list = sec?.querySelector<HTMLElement>('.jv-steps');
+  const items = sec ? [...sec.querySelectorAll<HTMLElement>('[data-jv-step]')] : [];
+  const nodes = sec ? [...sec.querySelectorAll<HTMLElement>('[data-jv-node]')] : [];
+  const now = sec?.querySelector<HTMLElement>('[data-jv-now]');
+  let active = -1;
+  let frame = 0;
+
+  const update = () => {
+    frame = 0;
+    const live = motionOk();
+    sec?.classList.toggle('is-live', live);
+
+    if (!sdt && stage && bgImg) {
+      if (live) {
+        const p = clamp(scrollY / innerHeight);
+        bgImg.style.translate = `0 ${p * 16}%`;
+        stage.style.transform = `scale(${1 - p * 0.05})`;
+      } else {
+        bgImg.style.removeProperty('translate');
+        stage.style.removeProperty('transform');
+      }
+    }
+
+    if (!sec || !list || !items.length) return;
+    const mid = innerHeight * 0.55;
+    const r = list.getBoundingClientRect();
+    sec.style.setProperty('--p', clamp((mid - r.top) / r.height).toFixed(4));
+    let idx = 0;
+    items.forEach((li, i) => { if (li.getBoundingClientRect().top < mid) idx = i; });
+    if (idx !== active) {
+      active = idx;
+      items.forEach((li, i) => li.toggleAttribute('data-active', i === idx));
+      nodes.forEach((n, i) => { n.toggleAttribute('data-active', i === idx); n.toggleAttribute('data-done', i < idx); });
+      if (now) now.textContent = String(idx + 1).padStart(2, '0');
+    }
+  };
+  const request = () => { if (!frame) frame = requestAnimationFrame(update); };
+  addEventListener('scroll', request, { passive: true });
+  addEventListener('resize', request);
+  motionMq.addEventListener('change', request);
+  new MutationObserver(request).observe(root, { attributes: true, attributeFilter: ['data-a11y-motion'] });
+  update();
+
+  // Reveal fallback when CSS scroll-driven animations are not supported.
+  if (!sdt && 'IntersectionObserver' in window) {
+    root.classList.add('jh-io');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('[data-rise], [data-wipe], [data-grow]').forEach((el) => io.observe(el));
+  }
+</script>
+
+<style>
+  /* ==========================================================================
+     Type roles (sizes, leading and tracking come from themes.css tokens)
+     ========================================================================== */
+  /* Label: a small dot + text. Latin is uppercase and tracked; Hebrew has no case, so it is a size
+     up, medium weight and untracked. */
+  :global(.jh-label) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35em 0.7em;
+    font-family: var(--font-body);
+    font-size: var(--j-label);
+    font-weight: var(--j-w-strong);
+    letter-spacing: var(--j-tr-label);
+    line-height: 1.4;
+    color: var(--muted);
+  }
+  :global(:lang(en) .jh-label) { text-transform: uppercase; }
+  :global(.jh-label)::before { content: ''; flex: none; inline-size: 0.5em; block-size: 0.5em; border-radius: 50%; background: currentColor; }
+  .jh-sep { inline-size: 1.5rem; block-size: 1px; background: currentColor; opacity: 0.7; }
+
+  .jx-h2 {
+    font-size: var(--j-h2);
+    font-weight: var(--j-w-display);
+    line-height: var(--j-lh-h2);
+    letter-spacing: var(--j-tr-h2);
+    max-inline-size: 12em;
+    overflow-wrap: anywhere;
+  }
+  .jx-lead { font-size: var(--j-lead); line-height: var(--j-lh-lead); color: var(--muted); max-inline-size: 26em; }
+
+  :global(.jh-pill) {
+    gap: 0.6em;
+    min-block-size: 3rem;
+    padding-inline: 1.5em;
+    border-width: 1px;
+    font-size: 1rem;
+    font-weight: var(--j-w-strong);
+    white-space: normal;
+    text-align: center;
+    transition: background-color 240ms var(--j-ease), border-color 240ms var(--j-ease), transform 120ms var(--j-ease);
+  }
+  .jh-pill-light { background: #fff; color: var(--fg); }
+  .jh-pill-glass { color: #fff; border-color: oklch(100% 0 none / 0.42); background: oklch(100% 0 none / 0.08); }
+  .jh-pill-dark { background: var(--fg); color: #fff; }
+  .jh-pill-line { color: var(--fg); border-color: color-mix(in oklch, var(--fg) 34%, transparent); background: transparent; }
+  .jh-pill :global(svg:not(.jr-arrow)) { inline-size: 1.05em; block-size: 1.05em; }
+  @media (hover: hover) and (pointer: fine) {
+    .jh-pill-light:hover { background: oklch(94% 0.02 295); }
+    .jh-pill-glass:hover { background: oklch(100% 0 none / 0.18); border-color: oklch(100% 0 none / 0.65); }
+    .jh-pill-dark:hover { background: #34343b; }
+    .jh-pill-line:hover { background: oklch(100% 0 none / 0.7); border-color: var(--fg); }
+  }
+
+  .jx-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    min-block-size: 2.75rem;
+    color: var(--fg);
+    font-weight: var(--j-w-strong);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in oklch, var(--fg) 38%, transparent);
+    text-underline-offset: 0.32em;
+  }
+  .jx-link:hover { text-decoration-color: currentColor; }
+
+  /* ==========================================================================
+     Layout primitives
+     ========================================================================== */
+  .jx-split {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-xl) var(--j-gap);
+    align-items: start;
+  }
+  .jx-head { display: grid; gap: var(--space-m); margin-block-end: var(--j-sec-s); }
+  .jx-head.jx-split { align-items: end; gap: var(--space-l) var(--j-gap); }
+  .jx-head-row { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--space-m) var(--space-xl); }
+  .jx-head-main { display: grid; gap: var(--space-m); }
+  .jx-head-center { justify-items: center; text-align: center; }
+  .jx-head-center .jh-label { justify-content: center; }
+  .jx-pills { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  /* Photo frame: the mask opens and the photo settles as it scrolls in. */
+  .jx-mask { position: relative; overflow: clip; border-radius: var(--j-r-l); background: var(--jr-sage); }
+  .jx-mask :global(img) { inline-size: 100%; block-size: 100%; object-fit: cover; }
+  .jx-mask[data-par] :global(img) { position: absolute; inset: -6% 0; block-size: 112%; }
+
+  /* ==========================================================================
+     1 · Hero
+     ========================================================================== */
+  .jh-hero {
+    --focus: oklch(88% 0.14 95);
+    padding-inline: var(--j-inset);
+    padding-block-start: clamp(0.25rem, 0.1rem + 0.5vw, 0.5rem);
+  }
+  .jh-stage {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    display: flex;
+    flex-direction: column;
+    min-block-size: min(58rem, calc(100svh - 8rem));
+    border-radius: var(--j-r-l);
+    background-color: var(--jr-violet);
+    color: #fff;
+    transform-origin: 50% 0;
+  }
+  .jh-bg { position: absolute; inset: 0; z-index: -1; overflow: clip; }
+  .jh-bg :global(img) {
+    position: absolute;
+    inset: -6% 0 auto;
+    inline-size: 100%;
+    block-size: 112%;
+    object-fit: cover;
+    filter: saturate(0.5) brightness(1.32) contrast(1.12) hue-rotate(-38deg);
+    transform: scale(1.08);
+    transform-origin: 50% 0;
+  }
+  .jh-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(62% 46% at 50% 46%, oklch(16% 0.05 292 / 0.62), transparent 88%),
+      linear-gradient(oklch(20% 0.06 292 / 0.2), oklch(14% 0.05 292 / 0.6) 90%);
+  }
+  .jh-body {
+    flex: 1;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: clamp(1.1rem, 0.8rem + 1vw, 1.75rem);
+    padding: clamp(3rem, 1.5rem + 5vw, 6rem) clamp(1.25rem, 0.5rem + 4vw, 4rem) clamp(2.25rem, 1.2rem + 3vw, 3.75rem);
+    text-align: center;
+  }
+  .jh-body .jh-label { justify-content: center; color: oklch(91% 0.025 295); }
+  .jh-body .jh-label::before { display: none; }
+  .jh-h1 {
+    font-size: var(--j-display);
+    font-weight: var(--j-w-display);
+    line-height: var(--j-lh-display);
+    letter-spacing: var(--j-tr-display);
+  }
+  .jh-line { display: block; overflow: clip; padding-block: 0.04em 0.14em; margin-block-end: -0.12em; }
+  .jh-line > span { display: inline-block; }
+  .jh-intro { max-inline-size: 33em; color: oklch(94% 0.015 295); font-size: var(--j-lead); line-height: var(--j-lh-lead); }
+  .jh-cta { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-xs); margin-block-start: var(--space-xs); }
+
+  .jh-facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0 var(--j-inset) var(--j-inset);
+    border: 1px solid oklch(100% 0 none / 0.12);
+    border-radius: calc(var(--j-r-l) - var(--j-inset) * 0.5);
+    background: oklch(14% 0.035 292 / 0.86);
+    backdrop-filter: blur(18px) saturate(1.2);
+    font-size: var(--j-small);
+    line-height: 1.5;
+  }
+  .jh-facts li {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    padding: clamp(1.1rem, 0.9rem + 0.6vw, 1.5rem) clamp(1.1rem, 0.8rem + 0.9vw, 1.75rem);
+  }
+  .jh-facts li + li { border-inline-start: 1px solid oklch(100% 0 none / 0.12); }
+  .jh-fact-k { color: oklch(84% 0.03 295); font-size: var(--j-label); font-weight: var(--j-w-strong); letter-spacing: var(--j-tr-label); line-height: 1.4; }
+  :global(:lang(en)) .jh-fact-k { text-transform: uppercase; font-size: 0.75rem; }
+  .jh-fact-v { color: #fff; font-weight: var(--j-w-strong); font-size: var(--j-body); line-height: 1.45; }
+  .jh-fact-ins { font-weight: 400; }
+  .jh-facts :global(.jh-open) { display: flex; align-items: center; gap: 0.5em; margin: 0; }
+  .jh-nw { white-space: nowrap; }
+  .jh-fact-a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    min-block-size: 2.75rem;
+    margin-block: -0.4rem -0.7rem;
+    color: #fff;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: oklch(100% 0 none / 0.5);
+    text-underline-offset: 0.3em;
+  }
+  .jh-fact-a:hover { text-decoration-color: currentColor; }
+
+  /* Hero motion: lines rise from behind a mask, then the rest follows. */
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-a11y-motion]) .jh-line > span { animation: jh-line 1100ms var(--j-ease) both; animation-delay: calc(120ms + var(--i) * 90ms); }
+    :root:not([data-a11y-motion]) .jh-in { animation: jh-rise 900ms var(--j-ease) both; animation-delay: calc(520ms + var(--d) * 110ms); }
+    :root:not([data-a11y-motion]) .jh-bg :global(img) { animation: jh-settle 1800ms var(--j-ease) both; }
+  }
+  @keyframes jh-line { from { transform: translateY(112%); } }
+  @keyframes jh-rise { from { opacity: 0; transform: translateY(28px); } }
+  @keyframes jh-settle { from { transform: scale(1.16); opacity: 0.4; } }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      :root:not([data-a11y-motion]) .jh-bg :global(img) {
+        animation: jh-settle 1800ms var(--j-ease) both, jh-parallax linear both;
+        animation-timeline: auto, scroll(root);
+        animation-range: normal, 0 100svh;
+      }
+      /* Timeline longhands sit in a more specific rule so the minifier can't fold them into the shorthand. */
+      :root:not([data-a11y-motion]) .jh-stage { animation: jh-shrink linear both; }
+      html:root:not([data-a11y-motion]) .jh-stage { animation-timeline: view(); animation-range: exit 0% exit 100%; }
+    }
+  }
+  @keyframes jh-parallax { to { translate: 0 16%; } }
+  @keyframes jh-shrink { to { transform: scale(0.94); } }
+
+  /* ==========================================================================
+     2 · About
+     ========================================================================== */
+  .jx-about { position: relative; isolation: isolate; overflow: clip; padding-block: var(--j-sec); }
+  /* Big faded display word behind the section (the doctor's name). Drawn from an attribute, so it is
+     never read out or selected. Drifts sideways with the scroll. */
+  .jx-ghost {
+    --j-dir: 1;
+    position: absolute;
+    z-index: -1;
+    inset-block-start: clamp(1rem, 3vw, 3rem);
+    inset-inline: 0;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    user-select: none;
+  }
+  :global([dir='rtl']) .jx-ghost { --j-dir: -1; }
+  .jx-ghost::before {
+    content: attr(data-word);
+    flex: none;
+    font-size: clamp(4.5rem, 19vw, 19rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--j-tr-display);
+    white-space: nowrap;
+    color: oklch(90% 0.028 190);
+    -webkit-mask-image: linear-gradient(#000 15%, transparent 92%);
+    mask-image: linear-gradient(#000 15%, transparent 92%);
+  }
+  .jx-about-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-2xl) var(--j-gap);
+    align-items: end;
+    padding-block-start: clamp(3rem, 8.5vw, 8.5rem);
+  }
+  .jx-about-text { display: grid; gap: var(--space-l); }
+  .jx-statement {
+    font-size: var(--j-statement);
+    font-weight: var(--j-w-display);
+    line-height: calc(var(--j-lh-h3) + 0.03);
+    letter-spacing: var(--j-tr-h3);
+    max-inline-size: 23em;
+  }
+  .jx-about-foot {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-l) var(--space-xl);
+    align-items: start;
+    margin-block-start: var(--space-l);
+    padding-block-start: var(--space-l);
+    border-block-start: 1px solid var(--j-hair);
+  }
+  .jx-about-more { color: var(--muted); max-inline-size: 30em; }
+  .jx-about-act { display: grid; gap: var(--space-m); justify-items: start; }
+  .jx-about-act :global(.license) { display: flex; flex-wrap: wrap; gap: 0 1rem; color: var(--muted); font-size: var(--j-small); line-height: 1.5; }
+  .jx-about-act :global(.license a) { color: var(--fg); min-block-size: 2.75rem; display: inline-flex; align-items: center; text-underline-offset: 0.3em; }
+  .jx-portrait { display: grid; gap: var(--space-s); }
+  .jx-portrait .jx-mask { aspect-ratio: 4 / 5; }
+  .jx-portrait :global(img) { object-position: 50% 12%; }
+  .jx-portrait figcaption { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 var(--space-m); padding-inline: 0.25rem; }
+  .jx-cap-n { font-weight: var(--j-w-strong); }
+  .jx-cap-s { color: var(--muted); font-size: var(--j-small); }
+
+  /* ==========================================================================
+     3 · Treatments
+     ========================================================================== */
+  .jx-treat { padding-block: 0 var(--j-sec-s); }
+  .jx-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-m); }
+  /* Cards share their rows (subgrid), so titles, summaries, lists and links line up across the row. */
+  .jx-card {
+    --pad: clamp(1rem, 0.7rem + 0.9vw, 1.5rem);
+    display: grid;
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+    padding: 0.5rem;
+    border: 1px solid var(--j-hair);
+    border-radius: var(--j-r-m);
+    background: var(--surface);
+  }
+  .jx-card > :not(.jx-card-art) { margin-inline: var(--pad); }
+  .jx-card-art {
+    aspect-ratio: 16 / 10;
+    overflow: clip;
+    border-radius: calc(var(--j-r-m) - 0.5rem);
+    color: oklch(48% 0.02 280);
+    background: radial-gradient(60% 70% at 50% 55%, #fff 0%, transparent 70%), var(--tone, var(--jr-sage));
+  }
+  .jx-card-art[data-tone='0'] { --tone: var(--jr-sage); }
+  .jx-card-art[data-tone='1'] { --tone: var(--jr-lilac); }
+  .jx-card-art[data-tone='2'] { --tone: var(--jr-yellow); }
+  .jx-card h3 { margin-block-start: clamp(1.25rem, 1rem + 0.9vw, 1.75rem); font-size: var(--j-h3); font-weight: var(--j-w-strong); letter-spacing: var(--j-tr-h3); line-height: var(--j-lh-h3); }
+  .jx-card-sum { margin-block-start: var(--space-s); color: var(--muted); }
+  .jx-card-list { display: grid; align-content: start; margin-block: var(--space-l) var(--space-m); border-block-start: 1px solid var(--j-hair); font-size: var(--j-small); line-height: 1.5; }
+  .jx-card-list li { display: flex; align-items: baseline; gap: 0.75rem; padding-block: 0.7rem; border-block-end: 1px solid var(--j-hair); }
+  .jx-card-list li::before { content: ''; flex: none; inline-size: 0.35rem; block-size: 0.35rem; border-radius: 50%; background: var(--fg); translate: 0 -0.2em; }
+  .jx-card .jx-link { justify-self: start; margin-block-end: clamp(0.25rem, 0.1rem + 0.5vw, 0.75rem); }
+
+  .jx-more {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s) var(--space-l);
+    margin-block-start: var(--space-xl);
+    padding-block-start: var(--space-l);
+    border-block-start: 1px solid var(--j-hair);
+  }
+  .jx-more-k { font-family: var(--font-body); font-size: var(--j-body); font-weight: var(--j-w-strong); letter-spacing: 0; line-height: 1.4; color: var(--muted); }
+  .jx-more-list { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  .jx-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    min-block-size: 2.75rem;
+    padding-inline: 1.15em;
+    border: 1px solid color-mix(in oklch, var(--fg) 34%, transparent);
+    border-radius: 999px;
+    color: var(--fg);
+    font-weight: var(--j-w-strong);
+    text-decoration: none;
+    transition: background-color 240ms var(--j-ease), border-color 240ms var(--j-ease);
+  }
+  @media (hover: hover) and (pointer: fine) { .jx-chip:hover { background: var(--surface); border-color: var(--fg); } }
+
+  /* ==========================================================================
+     4 · First visit
+     ========================================================================== */
+  .jv { position: relative; isolation: isolate; overflow: clip; padding-block: var(--j-sec); }
+  .jv-wash { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .jv-wash span { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.85; }
+  .jv-wash span:nth-child(1) { inline-size: 42rem; aspect-ratio: 1; inset-block-start: 4%; inset-inline-end: -12rem; background: oklch(90% 0.04 165); }
+  .jv-wash span:nth-child(2) { inline-size: 34rem; aspect-ratio: 1; inset-block-start: 38%; inset-inline-start: -10rem; background: oklch(91% 0.035 305); }
+  .jv-wash span:nth-child(3) { inline-size: 38rem; aspect-ratio: 1; inset-block-end: -6rem; inset-inline-end: 10%; background: oklch(95% 0.06 100); }
+
+  .jv-side { align-self: stretch; }
+  .jv-sticky { display: grid; gap: var(--space-m); justify-items: start; }
+  .jv-sticky .jx-lead { margin-block-start: var(--space-xs); }
+
+  .jv-progress { display: grid; gap: var(--space-l); margin-block-start: var(--space-xl); inline-size: 100%; }
+  .jv-count { display: none; justify-self: start; align-items: baseline; gap: 0.6rem; font-variant-numeric: tabular-nums; line-height: 1; }
+  .jv-count-now { font-size: clamp(3.5rem, 2rem + 4vw, 6rem); font-weight: 300; letter-spacing: -0.04em; }
+  .jv-count-total { font-size: var(--j-lead); color: var(--muted); }
+
+  .jv-rail { position: relative; display: grid; gap: var(--space-m); }
+  .jv-rail::before, .jv-rail-fill {
+    content: '';
+    position: absolute;
+    inset-block: 0.75rem;
+    inset-inline-start: calc(0.5rem - 1.5px);
+    inline-size: 3px;
+  }
+  .jv-rail::before { background: radial-gradient(circle, oklch(70% 0.01 280) 1.3px, transparent 1.6px) 0 0 / 3px 8px repeat-y; }
+  .jv-rail-fill {
+    background: radial-gradient(circle, var(--fg) 1.4px, transparent 1.7px) 0 0 / 3px 8px repeat-y;
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+  }
+  .jv-node { position: relative; display: flex; align-items: center; gap: 1rem; color: var(--muted); font-size: var(--j-small); line-height: 1.5; }
+  .jv-node-dot {
+    flex: none;
+    inline-size: 1rem;
+    block-size: 1rem;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1.5px solid oklch(62% 0.01 280);
+    transition: background-color 300ms var(--j-ease), border-color 300ms var(--j-ease), transform 300ms var(--j-ease);
+  }
+  .jv-node-t { transition: color 300ms var(--j-ease); }
+
+  .jv-steps { display: grid; gap: var(--space-m); }
+  .jv-step {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(11rem, 38%, 17rem);
+    gap: 0.5rem;
+    min-block-size: clamp(17rem, 14rem + 7vw, 20rem);
+    padding: 0.5rem;
+    border: 1px solid var(--j-hair);
+    border-radius: var(--j-r-m);
+    background: var(--surface);
+    isolation: isolate;
+  }
+  .jv-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-xl);
+    padding: clamp(1rem, 0.7rem + 1vw, 1.75rem);
+  }
+  .jv-num {
+    align-self: flex-start;
+    display: grid;
+    place-items: center;
+    min-inline-size: 3.25rem;
+    block-size: 2.25rem;
+    padding-inline: 0.9rem;
+    border-radius: 999px;
+    background: var(--fg);
+    color: #fff;
+    font-size: var(--j-small);
+    font-weight: var(--j-w-strong);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .jv-copy { display: grid; gap: var(--space-xs); }
+  .jv-copy h3 { font-size: var(--j-h3); font-weight: var(--j-w-strong); letter-spacing: var(--j-tr-h3); line-height: var(--j-lh-h3); }
+  .jv-copy p { color: var(--muted); max-inline-size: 30em; }
+  .jv-media { position: relative; overflow: clip; border-radius: calc(var(--j-r-m) - 0.5rem); background: var(--jr-sage); }
+  .jv-media :global(img) { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; object-position: var(--pos, 50% 50%); }
+  .jv-ways {
+    --focus: oklch(50% 0.2 260);
+    display: grid;
+    align-content: center;
+    gap: var(--space-xs);
+    padding: clamp(0.75rem, 0.5rem + 1vw, 1.25rem);
+    background: radial-gradient(90% 70% at 50% 0%, oklch(98% 0.03 100), transparent 75%), var(--jr-yellow);
+  }
+  .jv-ways .btn { inline-size: 100%; padding-inline: 0.9em; }
+
+  .jv-end {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m) var(--space-xl);
+    margin-block-start: var(--j-sec-s);
+    padding-block-start: var(--space-xl);
+    border-block-start: 1px solid var(--j-hair);
+  }
+  .jv-end p { font-size: var(--j-h3); font-weight: var(--j-w-display); letter-spacing: var(--j-tr-h3); line-height: var(--j-lh-h3); max-inline-size: 24em; }
+
+  @media (min-width: 56.01rem) and (min-height: 38rem) {
+    .jv-sticky { position: sticky; inset-block-start: calc(5rem + var(--space-xl)); }
+    .jv-steps { padding-block-end: 2vh; }
+  }
+
+  /* Live state (JS + motion allowed): the step in the middle of the screen is the active one.
+     Only the photo and the number chip change; text keeps full contrast at all times. */
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-a11y-motion]) .jv.is-live .jv-count { display: flex; }
+    :root:not([data-a11y-motion]) .jv.is-live .jv-rail-fill { transform: scaleY(var(--p, 0)); }
+    :root:not([data-a11y-motion]) .jv.is-live .jv-node[data-active] .jv-node-dot { background: var(--fg); border-color: var(--fg); transform: scale(1.25); }
+    :root:not([data-a11y-motion]) .jv.is-live .jv-node[data-done] .jv-node-dot { background: oklch(62% 0.01 280); border-color: oklch(62% 0.01 280); }
+    :root:not([data-a11y-motion]) .jv.is-live .jv-node[data-active] .jv-node-t { color: var(--fg); font-weight: var(--j-w-strong); }
+    :root:not([data-a11y-motion]) .jv.is-live .jv-step { transition: border-color 500ms var(--j-ease), box-shadow 500ms var(--j-ease); }
+    :root:not([data-a11y-motion]) .jv.is-live .jv-media :global(img) { transition: opacity 600ms var(--j-ease); }
+    :root:not([data-a11y-motion]) .jv.is-live .jv-num { transition: background-color 400ms var(--j-ease), color 400ms var(--j-ease); }
+    @media (min-width: 56.01rem) {
+      :root:not([data-a11y-motion]) .jv.is-live .jv-step[data-active] { border-color: color-mix(in oklch, var(--fg) 30%, transparent); box-shadow: 0 30px 60px -40px oklch(20% 0.02 280 / 0.35); }
+      :root:not([data-a11y-motion]) .jv.is-live .jv-step:not([data-active]) .jv-media :global(img) { opacity: 0.7; }
+      :root:not([data-a11y-motion]) .jv.is-live .jv-step:not([data-active]) .jv-num { background: transparent; color: var(--fg); box-shadow: inset 0 0 0 1.5px var(--fg); }
+    }
+  }
+
+  /* ==========================================================================
+     5 · Training and experience
+     ========================================================================== */
+  .jx-cred { padding-block: var(--j-sec); background: var(--surface); }
+  .jx-cred-quote { font-size: var(--j-statement); font-weight: var(--j-w-display); line-height: calc(var(--j-lh-h3) + 0.03); letter-spacing: var(--j-tr-h3); max-inline-size: 20em; }
+  .jx-ledger { border-block-end: 1px solid var(--j-hair); }
+  .jx-group { padding-block: clamp(1.5rem, 1.1rem + 1.2vw, 2.25rem); border-block-start: 1px solid var(--j-hair); }
+  .jx-group h3 { font-family: var(--font-body); font-size: var(--j-body); font-weight: var(--j-w-strong); letter-spacing: 0; line-height: 1.5; color: var(--fg); }
+  .jx-rows { display: grid; gap: var(--space-l); }
+  .jx-rows li { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 0.15rem var(--space-m); align-items: baseline; }
+  .jx-year { color: var(--muted); font-variant-numeric: tabular-nums; font-size: var(--j-small); line-height: 1.5; }
+  .jx-row-main { display: grid; gap: 0.1rem; }
+  .jx-row-t { font-size: var(--j-lead); font-weight: var(--j-w-strong); line-height: 1.35; letter-spacing: var(--j-tr-h3); }
+  .jx-row-p { color: var(--muted); font-size: var(--j-small); line-height: 1.5; }
+  .jx-rows-plain { gap: var(--space-xs); }
+  .jx-rows-plain li { display: block; }
+  .jx-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .jx-tags li { padding: 0.4rem 1rem; border-radius: 999px; background: var(--jr-sage); font-size: var(--j-small); font-weight: var(--j-w-strong); line-height: 1.5; }
+
+  /* ==========================================================================
+     6 · FAQ
+     ========================================================================== */
+  .jx-faq { padding: var(--j-inset); background: var(--surface); }
+  .jx-faq-panel {
+    padding-block: var(--j-sec);
+    border-radius: var(--j-r-l);
+    background:
+      radial-gradient(45% 55% at 12% 88%, oklch(95% 0.06 100), transparent 72%),
+      radial-gradient(45% 50% at 88% 12%, oklch(92% 0.03 305), transparent 72%),
+      var(--jr-sage);
+  }
+  .jx-faq-inner { max-inline-size: 48rem; }
+  .jx-faq :global(.faq) { display: grid; gap: var(--space-xs); }
+  .jx-faq :global(.faq details) { border: 1px solid oklch(100% 0 none / 0.85); border-radius: var(--j-r-m); background: oklch(100% 0 none / 0.62); transition: background-color 250ms var(--j-ease); }
+  .jx-faq :global(.faq details[open]) { background: var(--surface); }
+  .jx-faq :global(.faq summary) { overflow-wrap: anywhere; font-size: var(--j-lead); font-weight: var(--j-w-strong); line-height: 1.4; letter-spacing: var(--j-tr-h3); min-block-size: 4rem; padding: 0.9rem 1.5rem; padding-inline-end: 1rem; }
+  .jx-faq :global(.faq summary svg) { inline-size: 2.25rem; block-size: 2.25rem; padding: 0.55rem; border-radius: 50%; background: var(--fg); color: #fff; }
+  .jx-faq :global(.faq-a) { padding-inline: 1.5rem; padding-block-end: 1.5rem; color: var(--muted); max-inline-size: 38em; }
+
+  /* ==========================================================================
+     7 · Location and hours
+     ========================================================================== */
+  .jx-loc { padding-block: var(--j-sec); }
+  .jx-loc-photo .jx-mask { aspect-ratio: 4 / 5; }
+  .jx-loc-photo :global(img) { object-position: 42% 50%; }
+  .jx-book { display: grid; border-block-end: 1px solid var(--j-hair); }
+  .jx-entry { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 7fr); gap: var(--space-s) var(--space-l); padding-block: clamp(1.5rem, 1.1rem + 1.2vw, 2.25rem); border-block-start: 1px solid var(--j-hair); }
+  .jx-entry:focus { outline: none; }
+  .jx-entry h3 { font-family: var(--font-body); font-size: var(--j-body); font-weight: var(--j-w-strong); letter-spacing: 0; line-height: 1.5; }
+  .jx-entry-body { display: grid; gap: var(--space-s); justify-items: start; }
+  .jx-big { font-size: var(--j-h3); font-weight: var(--j-w-strong); line-height: var(--j-lh-h3); letter-spacing: var(--j-tr-h3); }
+  .jx-muted { color: var(--muted); max-inline-size: 34em; }
+  .jx-entry .jx-pills { margin-block-start: var(--space-xs); }
+  .jx-entry :global(.jx-open) { display: flex; align-items: center; gap: 0.5em; font-size: var(--j-lead); font-weight: var(--j-w-strong); line-height: 1.4; margin: 0; }
+  .jx-entry :global(.hours) { inline-size: min(100%, 24rem); border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .jx-entry :global(.hours th), .jx-entry :global(.hours td) { padding-block: 0.5rem; border-block-end: 1px solid var(--j-hair); text-align: start; font-weight: 400; }
+  .jx-entry :global(.hours td) { text-align: end; }
+  .jx-entry :global(.hours tr[data-today]), .jx-entry :global(.hours tr[data-today] th) { font-weight: 600; }
+  .jx-phone { display: inline-flex; align-items: center; gap: 0.6em; min-block-size: 2.75rem; color: var(--fg); font-size: var(--j-lead); font-weight: var(--j-w-strong); text-decoration: none; }
+  .jx-phone :global(svg) { inline-size: 1em; block-size: 1em; }
+  .jx-access { gap: 0.65rem; }
+  .jx-access li { display: flex; gap: 0.7rem; align-items: baseline; color: var(--muted); }
+  .jx-access li[data-ok] { color: var(--fg); }
+  .jx-access :global(svg) { flex: none; inline-size: 1.1em; block-size: 1.1em; translate: 0 0.2em; }
+  .jx-alt { display: block; font-size: var(--j-small); line-height: 1.5; }
+
+  /* ==========================================================================
+     8 · Closing call to action
+     ========================================================================== */
+  .jx-cta { padding: 0 var(--j-inset) var(--j-inset); }
+  .jx-cta-card {
+    --focus: oklch(88% 0.14 95);
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-xl) var(--j-gap);
+    align-items: stretch;
+    padding: var(--j-inset);
+    border-radius: var(--j-r-l);
+    background:
+      radial-gradient(70% 90% at 0% 100%, oklch(34% 0.09 300 / 0.55), transparent 70%),
+      var(--jr-violet);
+    color: #fff;
+  }
+  :global([dir='rtl']) .jx-cta-card { background: radial-gradient(70% 90% at 100% 100%, oklch(34% 0.09 300 / 0.55), transparent 70%), var(--jr-violet); }
+  .jx-cta-body {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: var(--space-m);
+    padding: clamp(2rem, 1rem + 5vw, 6rem) clamp(0.75rem, 0.2rem + 3.4vw, 4.5rem);
+    padding-inline-end: 0;
+  }
+  .jx-cta-body .jh-label { color: oklch(90% 0.025 295); }
+  .jx-cta-body h2 { overflow-wrap: anywhere; font-size: var(--j-h2); font-weight: var(--j-w-display); line-height: var(--j-lh-h2); letter-spacing: var(--j-tr-h2); max-inline-size: 11em; }
+  .jx-cta-text { color: oklch(94% 0.015 295); font-size: var(--j-lead); line-height: var(--j-lh-lead); max-inline-size: 28em; }
+  .jx-cta-body .jx-pills { margin-block-start: var(--space-m); }
+  .jx-cta-photo { display: grid; min-block-size: clamp(16rem, 12rem + 14vw, 26rem); }
+  .jx-cta-photo .jx-mask { border-radius: calc(var(--j-r-l) - var(--j-inset) * 0.5); background: oklch(30% 0.04 295); }
+  .jx-cta-photo :global(img) { object-position: 62% 50%; }
+
+  /* ==========================================================================
+     Responsive
+     ========================================================================== */
+  @media (max-width: 62rem) {
+    .jh-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .jh-facts li:nth-child(3) { border-inline-start: 0; }
+    .jh-facts li:nth-child(n + 3) { border-block-start: 1px solid oklch(100% 0 none / 0.12); }
+    .jx-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .jx-about-foot { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 56rem) {
+    .jx-split, .jx-about-grid, .jx-cta-card { grid-template-columns: minmax(0, 1fr); }
+    .jx-head.jx-split { align-items: start; }
+    .jx-about-grid { align-items: start; }
+    .jx-portrait { order: -1; }
+    .jx-portrait .jx-mask { aspect-ratio: 5 / 4; }
+    .jx-loc-photo .jx-mask { aspect-ratio: 16 / 10; }
+    .jx-group.jx-split { gap: var(--space-s); }
+    .jv-progress { display: none; }
+    .jv-steps { position: relative; padding-inline-start: 1.25rem; }
+    .jv-steps::before, .jv-steps::after {
+      content: '';
+      position: absolute;
+      inset-block: 0.5rem;
+      inset-inline-start: 0;
+      inline-size: 2px;
+      border-radius: 2px;
+      background: var(--j-hair);
+    }
+    .jv-steps::after { background: var(--fg); transform: scaleY(var(--p, 0)); transform-origin: 50% 0; }
+    .jx-cta-body { padding-inline-end: clamp(0.75rem, 0.2rem + 3.4vw, 4.5rem); }
+    .jx-cta-photo { min-block-size: 0; }
+    .jx-cta-photo .jx-mask { aspect-ratio: 16 / 10; }
+  }
+  @media (max-width: 40rem) {
+    .jx-cards { grid-template-columns: minmax(0, 1fr); }
+    .jx-card-art { aspect-ratio: 2 / 1; }
+    .jv-step { grid-template-columns: minmax(0, 1fr); min-block-size: 0; }
+    .jv-step .jv-media:not(.jv-ways) { aspect-ratio: 3 / 2; order: -1; }
+    .jv-body { gap: var(--space-l); }
+    .jx-entry { grid-template-columns: minmax(0, 1fr); }
+    .jx-rows li { grid-template-columns: minmax(0, 1fr); }
+    .jv-end .btn { inline-size: 100%; }
+  }
+  @media (max-width: 34rem) {
+    .jh-facts { grid-template-columns: minmax(0, 1fr); }
+    .jh-facts li + li { border-inline-start: 0; border-block-start: 1px solid oklch(100% 0 none / 0.12); }
+    .jh-bg::after { background: linear-gradient(oklch(16% 0.05 292 / 0.5), oklch(14% 0.05 292 / 0.7)); }
+    .jh-body { justify-items: start; text-align: start; }
+    .jh-body .jh-label { justify-content: flex-start; }
+    .jh-cta { inline-size: 100%; }
+    .jh-cta .btn { flex: 1 1 8.5rem; padding-inline: 0.75em; }
+    .jh-cta .jh-pill-light { flex-basis: 100%; }
+    .jx-pills { display: grid; inline-size: 100%; }
+    .jx-pills .btn { inline-size: 100%; }
+    .jx-portrait .jx-mask { aspect-ratio: 1; }
+  }
+
+  /* ==========================================================================
+     Motion system: rise, mask-open, grow, parallax, drift
+     CSS scroll-driven where supported, IntersectionObserver (.jh-io + .is-in) otherwise.
+     Timeline longhands sit in a more specific rule so the minifier can't fold them into the shorthand.
+     ========================================================================== */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      :root.jh-js:not([data-a11y-motion]) [data-rise] { animation: jh-rise linear both; }
+      html:root.jh-js:not([data-a11y-motion]) [data-rise] { animation-timeline: view(); animation-range: entry calc(var(--k, 0) * 7%) entry calc(55% + var(--k, 0) * 7%); }
+
+      :root.jh-js:not([data-a11y-motion]) [data-wipe] { animation: jx-open linear both; }
+      html:root.jh-js:not([data-a11y-motion]) [data-wipe] { animation-timeline: view(); animation-range: entry 0% cover 38%; }
+      :root.jh-js:not([data-a11y-motion]) [data-wipe]:not([data-par]) :global(img) { animation: jx-settle linear both; }
+      html:root.jh-js:not([data-a11y-motion]) [data-wipe]:not([data-par]) :global(img) { animation-timeline: view(); animation-range: entry 0% cover 55%; }
+
+      :root.jh-js:not([data-a11y-motion]) [data-par] :global(img) { animation: jx-par linear both; }
+      html:root.jh-js:not([data-a11y-motion]) [data-par] :global(img) { animation-timeline: view(); animation-range: cover 0% cover 100%; }
+
+      :root.jh-js:not([data-a11y-motion]) .jv-media :global(img) { animation: jx-settle linear both; }
+      html:root.jh-js:not([data-a11y-motion]) .jv-media :global(img) { animation-timeline: view(); animation-range: entry 0% cover 50%; }
+
+      :root.jh-js:not([data-a11y-motion]) [data-grow] { animation: jx-grow linear both; }
+      html:root.jh-js:not([data-a11y-motion]) [data-grow] { animation-timeline: view(); animation-range: entry 0% entry 70%; }
+
+      :root.jh-js:not([data-a11y-motion]) .jx-ghost::before { animation: jx-drift linear both; }
+      html:root.jh-js:not([data-a11y-motion]) .jx-ghost::before { animation-timeline: view(); animation-range: cover 0% cover 100%; }
+
+      :root.jh-js:not([data-a11y-motion]) .jv-wash span { animation: jx-float linear both; }
+      html:root.jh-js:not([data-a11y-motion]) .jv-wash span { animation-timeline: view(); animation-range: cover 0% cover 100%; }
+      :root.jh-js:not([data-a11y-motion]) .jv-wash span:nth-child(2) { animation-direction: reverse; }
+
+      :root.jh-js:not([data-a11y-motion]) .jx-card-art :global(.orb-spin) { animation: jx-turn linear both; }
+      html:root.jh-js:not([data-a11y-motion]) .jx-card-art :global(.orb-spin) { animation-timeline: view(); animation-range: cover 0% cover 100%; }
+    }
+    :root.jh-io:not([data-a11y-motion]) [data-rise] { transition: opacity 900ms var(--j-ease), transform 900ms var(--j-ease); transition-delay: calc(var(--k, 0) * 90ms); }
+    :root.jh-io:not([data-a11y-motion]) [data-rise]:not(.is-in) { opacity: 0; transform: translateY(28px); }
+    :root.jh-io:not([data-a11y-motion]) [data-wipe] { transition: clip-path 1100ms var(--j-ease); }
+    :root.jh-io:not([data-a11y-motion]) [data-wipe]:not(.is-in) { clip-path: inset(9% 9% 9% 9% round var(--j-r-l)); }
+    :root.jh-io:not([data-a11y-motion]) [data-grow] { transition: transform 900ms var(--j-ease); }
+    :root.jh-io:not([data-a11y-motion]) [data-grow]:not(.is-in) { transform: scale(0.95); }
+  }
+  @keyframes jx-open { from { clip-path: inset(9% 9% 9% 9% round var(--j-r-l)); } to { clip-path: inset(0 0 0 0 round var(--j-r-l)); } }
+  @keyframes jx-settle { from { scale: 1.14; } }
+  @keyframes jx-grow { from { transform: scale(0.93); } }
+  @keyframes jx-par { from { translate: 0 -5%; } to { translate: 0 5%; } }
+  @keyframes jx-drift { from { translate: calc(var(--j-dir) * -7%) 0; } to { translate: calc(var(--j-dir) * 7%) 0; } }
+  @keyframes jx-float { from { translate: 0 -14%; } to { translate: 0 14%; } }
+  @keyframes jx-turn { from { rotate: -24deg; scale: 0.94; } to { rotate: 24deg; scale: 1.04; } }
+
+  @media (forced-colors: active) {
+    .jh-facts, .jv-step, .jx-card, .jx-cta-card, .jx-chip { border: 1px solid CanvasText; }
+    .jv-node-dot { forced-color-adjust: none; }
+    .jx-ghost { display: none; }
+  }
+</style>

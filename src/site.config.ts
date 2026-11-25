@@ -6,7 +6,7 @@
  * - Everything marked PLACEHOLDER must be replaced before going live.
  */
 
-export type TemplateId = 'clinic' | 'editorial' | 'warm';
+export type TemplateId = 'clinic' | 'editorial' | 'warm' | 'landing' | 'journey';
 export type Lang = 'he' | 'en';
 
 export const site = {
@@ -43,6 +43,8 @@ export const site = {
     email: 'clinic@example.co.il', // PLACEHOLDER
     /** External booking system (Doctoronline, Calendly, Zimmer…). '' = use the built-in request form. */
     bookingUrl: '',
+    /** Name of that booking system, for documentation only (not shown yet): 'Medform', 'Klinix', 'Tipulog'. */
+    bookingProvider: '',
     /** Where the request form posts. Formspree / Web3Forms / own endpoint. '' = opens an email draft. */
     formEndpoint: '',
     mapsQuery: 'Rothschild Blvd 1, Tel Aviv', // PLACEHOLDER – used for Google Maps / Waze links
@@ -98,7 +100,12 @@ export const site = {
     'detail-desk': { src: 'https://images.unsplash.com/photo-1652787542567-f86c0b4c0269?w=1600&q=80&auto=format&fit=crop', credit: 'Abdulai Sayni / Unsplash', page: 'https://unsplash.com/photos/u2EjDa_hYJI' },
     'exterior-1': { src: 'https://images.unsplash.com/photo-1657314136565-f40eab6464c4?w=1600&q=80&auto=format&fit=crop', credit: 'Marat Badykov / Unsplash', page: 'https://unsplash.com/photos/I3mSCfG7AEg' },
     'exterior-2': { src: 'https://images.unsplash.com/photo-1672575770678-a1f806a19714?w=1600&q=80&auto=format&fit=crop', credit: 'Nils Adam / Unsplash', page: 'https://unsplash.com/photos/USSZb0BI9a0' },
+    'building-tlv': { src: 'https://images.unsplash.com/photo-1553323122-6c81666fc9d2?w=1600&q=80&auto=format&fit=crop', credit: 'Anders J / Unsplash', page: 'https://unsplash.com/photos/7w4Zl66nlSY' },
+    'waiting-corner': { src: 'https://images.unsplash.com/photo-1633132638592-2202c9666d95?w=1200&q=80&auto=format&fit=crop', credit: 'veronika ko / Unsplash', page: 'https://unsplash.com/photos/mph7m0dC6v0' },
+    'exam-otoscope': { src: 'https://images.unsplash.com/photo-1576085898419-d54e840d898f?w=1200&q=80&auto=format&fit=crop', credit: 'charlesdeluvio / Unsplash', page: 'https://unsplash.com/photos/2is2GQovngg' },
+    'teddy-otoscope': { src: 'https://images.unsplash.com/photo-1763294905880-6caf7e585241?w=1600&q=80&auto=format&fit=crop', credit: 'Pauli Nie / Unsplash', page: 'https://unsplash.com/photos/nlj0xvTlk0s' },
     'texture-1': { src: 'https://images.unsplash.com/photo-1528458909336-e7a0adfed0a5?w=1600&q=80&auto=format&fit=crop', credit: 'Annie Spratt / Unsplash', page: 'https://unsplash.com/photos/xTaOPMa6wAE' },
+    'abstract-violet': { src: 'https://images.unsplash.com/photo-1607499457689-3fd1ac3ffcdd?w=2000&q=75&auto=format&fit=crop', credit: 'engin akyurt / Unsplash', page: 'https://unsplash.com/photos/8CItx_c0CkI' },
     'texture-2': { src: 'https://images.unsplash.com/photo-1764437835706-ba9d63250bd2?w=1600&q=80&auto=format&fit=crop', credit: 'Logan Voss / Unsplash', page: 'https://unsplash.com/photos/sFGj4Lj1un8' },
   } as Record<string, { src: string; credit?: string; page?: string }>,
 };

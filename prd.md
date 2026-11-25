@@ -3,17 +3,20 @@
 ## User and problem
 A doctor who owns a private clinic in Israel needs a site that brings patients, makes booking easy, presents bio and credentials, and complies with accessibility law. Agencies currently build these on WordPress or Wix, mostly Hebrew only, with third-party accessibility widgets.
 
+## Goal
+Turn a new patient's search into a booked first visit; give any patient the fastest way to reach and find the clinic. Success = booking requests and calls. Returning patients: "contact the clinic" is enough (AMIT SAYS).
+
 ## First-version outcome
 A developer or agent can launch a compliant two-language clinic site in under a day by editing two files.
 
 ## Main flow
-1. Patient lands on the home page, sees specialty, booking options and clinic facts.
+1. A new patient lands on the home page and sees, above the fold: specialty, one "book a first appointment" button, call/WhatsApp, address and today's hours.
 2. Reads about the doctor and the services.
 3. Books: phone, WhatsApp, request form or external booking link.
 4. Anyone can open the accessibility panel or statement from every page.
 
 ## Included
-- Three home layouts (Clinic, Profile, Family) sharing inner pages.
+- Four home layouts (Clinic, Profile, Family, Landing) sharing inner pages. Landing follows SaaS landing-page structure.
 - Pages: home, about, services, appointment, accessibility statement, privacy policy, 404.
 - Hebrew (RTL, default) and English (LTR), hreflang, language switch on every page.
 - Native accessibility panel and statement generated from config.
