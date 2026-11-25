@@ -5,7 +5,7 @@ track: commercial
 platform: web
 interest:
 next: "Amit: review the three layouts and answer the open questions in prd.md"
-repo:
+repo: https://github.com/amit-kap/doctors-template-website
 source: Amit, 2026-11-24
 updated: 2026-11-24
 ---
