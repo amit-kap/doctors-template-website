@@ -1,0 +1,51 @@
+---
+/** D · JOURNEY — light closing panel for the Journey inner pages: one line, one sentence, three ways to book. */
+import { site } from '../../site.config';
+import { whatsappHref, bookLink, type Ctx } from '../../i18n';
+import Icon from '../../components/Icon.astro';
+import Arrow from './Arrow.astro';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+const j = t.journey;
+const wa = whatsappHref();
+const book = bookLink(ctx);
+---
+<section class="jc" aria-labelledby="jc-h">
+  <div class="wrap">
+    <div class="jc-card">
+      <div class="jc-text">
+        <h2 id="jc-h">{j.ctaTitle}</h2>
+        <p>{j.ctaText}</p>
+      </div>
+      <div class="jc-pills">
+        <a class="btn jh-pill jh-pill-dark" href={book.href} target={book.external ? '_blank' : undefined} rel={book.external ? 'noopener' : undefined}>
+          {j.bookFirst}<Arrow />{book.external && <span class="visually-hidden"> {t.ui.newWindow}</span>}
+        </a>
+        <a class="btn jh-pill jh-pill-line" href={`tel:${site.contact.phoneHref}`}>
+          <Icon name="phone" /><span class="visually-hidden">{t.ui.callFull}: </span><span dir="ltr">{site.contact.phone}</span>
+        </a>
+        {wa && (
+          <a class="btn jh-pill jh-pill-wa" href={wa} target="_blank" rel="noopener">
+            <Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span>
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .jc { padding-block: var(--j-sec-s); }
+  .jc-card { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--space-xl); padding: clamp(1.5rem, 1rem + 3vw, 4rem); border-radius: var(--j-r-l); background: var(--jr-sage); }
+  .jc-text { display: grid; gap: var(--space-s); }
+  .jc-text h2 { font-size: var(--j-h2); font-weight: var(--j-w-display); line-height: var(--j-lh-h2); letter-spacing: var(--j-tr-h2); max-inline-size: 11em; }
+  .jc-text p { color: var(--muted); font-size: var(--j-lead); line-height: var(--j-lh-lead); max-inline-size: 28em; }
+  .jc-pills { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  @media (max-width: 34rem) {
+    .jc-pills { display: grid; inline-size: 100%; }
+    .jc-pills .btn { inline-size: 100%; }
+  }
+  @media (forced-colors: active) { .jc-card { border: 1px solid CanvasText; } }
+</style>

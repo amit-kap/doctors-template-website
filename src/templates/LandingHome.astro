@@ -1,6 +1,6 @@
 ---
 /**
- * D · LANDING — SaaS landing-page structure applied to a clinic.
+ * A · LANDING — SaaS landing-page structure applied to a clinic.
  * One primary action (book a first appointment), repeated down the page:
  * hero → trust bar → treatments → how it works → about → location & hours → FAQ → final CTA.
  * No testimonials, ratings, prices or superlatives (Physicians Advertising Regulations 2008).
@@ -38,6 +38,9 @@ const physical = Object.entries(site.accessibility.physical) as [keyof typeof t.
         <a class="btn btn-outline btn-lg" href={`tel:${site.contact.phoneHref}`}><Icon name="phone" /><span class="visually-hidden">{t.ui.callFull}: </span><span dir="ltr">{site.contact.phone}</span></a>
         {wa && <a class="btn btn-quiet btn-lg" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span></a>}
       </div>
+      <ul class="hero-points" role="list">
+        {d.highlights.map((h) => <li><Icon name="check" />{h}</li>)}
+      </ul>
       <ul class="hero-facts" role="list">
         <li>
           <Icon name="clock" />
@@ -182,6 +185,9 @@ const physical = Object.entries(site.accessibility.physical) as [keyof typeof t.
   .hero h1 { font-size: clamp(2rem, 1.4rem + 3vw, 4.4rem); line-height: 1.1; max-inline-size: 16em; }
   .hero-cta { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
   .btn-lg { min-block-size: 3.25rem; padding-inline: 1.5em; }
+  .hero-points { display: flex; flex-wrap: wrap; gap: var(--space-xs) var(--space-l); font-size: var(--step--1); color: var(--muted); }
+  .hero-points li { display: flex; align-items: center; gap: 0.4em; }
+  .hero-points :global(svg) { inline-size: 1.1em; block-size: 1.1em; flex: none; color: var(--primary); }
   .hero-facts {
     display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.3fr); gap: var(--space-m) var(--space-l);
     inline-size: 100%; margin-block-start: var(--space-s); padding-block-start: var(--space-l);

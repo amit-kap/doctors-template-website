@@ -11,13 +11,13 @@ export const dirOf = (lang: string) => (RTL.has(lang) ? 'rtl' : 'ltr');
 export const PAGES = ['home', 'about', 'services', 'appointment', 'accessibility', 'privacy'] as const;
 export type PageId = (typeof PAGES)[number];
 
-export const TEMPLATES: TemplateId[] = ['clinic', 'editorial', 'warm', 'landing', 'journey'];
+export const TEMPLATES: TemplateId[] = ['landing', 'editorial', 'warm', 'journey'];
 
 /** Everything a component needs to render in the right language and template. */
 export interface Ctx {
   lang: Lang;
   template: TemplateId;
-  /** '' for the configured template, '/t/<id>' for the other two in showcase mode. */
+  /** '' for the configured template, '/t/<id>' for the others in showcase mode. */
   prefix: string;
   page: PageId;
   t: Content;

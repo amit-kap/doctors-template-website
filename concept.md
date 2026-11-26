@@ -4,10 +4,10 @@ status: develop
 track: commercial
 platform: web
 interest:
-next: "Amit: review the three layouts and answer the open questions in prd.md"
+next: "Amit: review the four layouts and answer the open questions in prd.md"
 repo: https://github.com/amit-kap/doctors-template-website
 source: Amit, 2026-11-24
-updated: 2026-11-24
+updated: 2026-11-26
 ---
 
 # Doctors template website
@@ -61,3 +61,9 @@ No vendor documents an accessible embed. Decision: the site links to the clinic'
 - 2026-11-24: Taste-skill redesign rejected by Amit ("horrible"); reverted to the first layouts. Accessibility-audit fixes kept. Drift: none.
 - 2026-11-24: Goal defined with Amit (see ## Goal). Booking: use an Israeli booking system if one fits, else the request form. Returning patients: contact only. Added a fourth layout, D Landing, in SaaS landing-page style. Drift: the one-liner now leads with booking a first visit.
 - 2026-11-25: Added a fifth layout, E Journey, from a reference video Amit gave (ref/uuuu_qAJjlfKM.mp4, a fertility-clinic site): calm SaaS look, soft colour washes, a scroll-driven "first visit" path. Left out the reference's patient quotes, success rates, success stories and "free consultation" (advertising rules). Drift: none.
+- 2026-11-26: Amit merged A Clinic into Landing: the two shared the same hero, sections and palette family. Landing is now layout A and the default; it took Clinic's highlights checklist. Clinic's top utility bar was dropped. Four layouts remain: Landing, Profile, Family, Journey. Drift: none.
+- 2026-11-26: Journey home reworked at Amit's request: hero uses a clinic waiting-area photo; hero, FAQ and closing panels sit in the page column; the visit section has a numbered stepper with phase names that links to each step; blurred colour blobs and gradient glows removed; dark purple replaced with deep sage green. Drift: none.
+- 2026-11-26: Journey hero changed again at Amit's request: full width, light pale-yellow band, teddy-bear ear-check photo, no dark panels anywhere (closing panel is pale yellow too). Supersedes the dark hero in the line above. Drift: none.
+- 2026-11-26: Journey hero settled with Amit: the original centred format, full-width photo of a children's play corner under a light veil, text and facts card on the page column, no dark and no yellow. Supersedes the split yellow hero in the line above. Closing panel is sage. Drift: none.
+- 2026-11-26: Journey got its own about page at Amit's request: heading-and-content sections with hairlines, and a dated timeline for training and positions. Also for Journey: template switcher bar pinned to the top (showcase only), hero WhatsApp button in brand green, hero photo slightly blurred. Drift: none.
+- 2026-11-26: Journey got its own services page at Amit's request, with the home's treatment cards and line drawings; the Journey inner pages share one light closing panel. Drift: none.

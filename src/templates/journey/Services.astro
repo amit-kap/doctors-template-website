@@ -1,0 +1,124 @@
+---
+/**
+ * D · JOURNEY — services page.
+ * The same treatment cards as the Journey home (tone panel + line drawing), one grid per service group,
+ * with the full list of what each treatment covers. Each card keeps its #id so home links land on it.
+ */
+import type { Ctx } from '../../i18n';
+import Orb from './Orb.astro';
+import JourneyCta from './Cta.astro';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+let n = 0;
+// Two columns when a group has 2 or 4 treatments, so no card is left alone on a row.
+const colsFor = (count: number) => (count % 3 !== 0 && count % 2 === 0 ? 2 : 3);
+const groups = t.serviceGroups.map((g) => ({
+  ...g,
+  items: t.services.filter((s) => s.group === g.id).map((s) => ({ ...s, i: n++ })),
+}));
+---
+<section class="js-head" aria-labelledby="js-h1">
+  <div class="wrap js-head-in">
+    <p class="jh-label">{t.doctor.specialty}</p>
+    <h1 id="js-h1" class="js-h1">{t.ui.nav.services}</h1>
+    <p class="js-lead">{t.doctor.intro}</p>
+  </div>
+</section>
+
+{groups.map((g) => (
+  <section class="js-group" aria-labelledby={`js-${g.id}-h`}>
+    <div class="wrap">
+      <h2 id={`js-${g.id}-h`} class="js-h2">{g.title}</h2>
+      <ul class="js-cards" role="list" data-cols={colsFor(g.items.length)}>
+        {g.items.map((s) => (
+          <li class="js-card" id={s.id}>
+            <div class="js-art" data-tone={s.i % 3} aria-hidden="true"><Orb variant={s.i} /></div>
+            <h3>{s.title}</h3>
+            <p class="js-sum">{s.summary}</p>
+            <ul class="js-list" role="list">
+              {s.details.map((x) => <li>{x}</li>)}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+))}
+
+<section class="js-group" aria-labelledby="js-ins-h">
+  <div class="wrap js-split">
+    <h2 id="js-ins-h" class="js-h2">{t.ui.insuranceTitle}</h2>
+    <div class="js-ins">
+      <p>{t.insurance.text}</p>
+      <ul class="js-tags" role="list">{t.insurance.items.map((x) => <li>{x}</li>)}</ul>
+    </div>
+  </div>
+</section>
+
+<JourneyCta ctx={ctx} />
+
+<style>
+  .js-head { padding-block: var(--j-sec-s); }
+  .js-head-in { display: grid; gap: var(--space-l); justify-items: start; }
+  .js-h1 { font-size: var(--j-h2); font-weight: var(--j-w-display); line-height: var(--j-lh-h2); letter-spacing: var(--j-tr-h2); }
+  .js-lead { max-inline-size: 34em; color: var(--muted); font-size: var(--j-lead); line-height: var(--j-lh-lead); }
+
+  .js-group .wrap { padding-block: var(--j-sec-s); border-block-start: 1px solid var(--j-hair); }
+  .js-h2 { margin-block-end: var(--space-xl); font-size: var(--j-statement); font-weight: var(--j-w-display); line-height: var(--j-lh-h3); letter-spacing: var(--j-tr-h3); }
+
+  /* Cards share their rows (subgrid), so titles, summaries and lists line up across the row. */
+  .js-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-m); }
+  .js-cards[data-cols='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .js-cards[data-cols='2'] .js-art { aspect-ratio: 5 / 2; }
+  .js-card {
+    --pad: clamp(1rem, 0.7rem + 0.9vw, 1.5rem);
+    display: grid;
+    grid-row: span 4;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+    padding: 0.5rem 0.5rem var(--pad);
+    border: 1px solid var(--j-hair);
+    border-radius: var(--j-r-m);
+    background: var(--surface);
+    scroll-margin-block-start: calc(1rem + var(--showcase-h, 0px));
+  }
+  .js-card > :not(.js-art) { margin-inline: var(--pad); }
+  .js-art { aspect-ratio: 16 / 10; overflow: clip; border-radius: calc(var(--j-r-m) - 0.5rem); color: oklch(48% 0.02 280); background: var(--tone, var(--jr-sage)); }
+  .js-art[data-tone='0'] { --tone: var(--jr-sage); }
+  .js-art[data-tone='1'] { --tone: var(--jr-lilac); }
+  .js-art[data-tone='2'] { --tone: var(--jr-yellow); }
+  .js-card h3 { margin-block-start: clamp(1.25rem, 1rem + 0.9vw, 1.75rem); font-size: var(--j-h3); font-weight: var(--j-w-strong); letter-spacing: var(--j-tr-h3); line-height: var(--j-lh-h3); }
+  .js-sum { margin-block-start: var(--space-s); color: var(--muted); }
+  .js-list { display: grid; align-content: start; margin-block-start: var(--space-l); border-block-start: 1px solid var(--j-hair); font-size: var(--j-small); line-height: 1.5; }
+  .js-list li { display: flex; align-items: baseline; gap: 0.75rem; padding-block: 0.7rem; border-block-end: 1px solid var(--j-hair); }
+  .js-list li:last-child { border-block-end: 0; padding-block-end: 0; }
+  .js-list li::before { content: ''; flex: none; inline-size: 0.35rem; block-size: 0.35rem; border-radius: 50%; background: var(--fg); translate: 0 -0.2em; }
+  .js-card:target { border-color: var(--fg); }
+
+  .js-split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-l) var(--j-gap); align-items: start; }
+  .js-split .js-h2 { margin-block-end: 0; font-size: var(--j-h3); font-weight: var(--j-w-strong); }
+  .js-ins { display: grid; gap: var(--space-l); max-inline-size: 40em; }
+  .js-ins p { color: var(--muted); font-size: var(--j-lead); line-height: var(--j-lh-lead); }
+  .js-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .js-tags li { padding: 0.4rem 1rem; border-radius: 999px; background: var(--jr-sage); font-size: var(--j-small); font-weight: var(--j-w-strong); line-height: 1.5; }
+
+  @media (max-width: 62rem) { .js-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 56rem) { .js-split { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 40rem) {
+    .js-cards { grid-template-columns: minmax(0, 1fr); }
+    .js-art { aspect-ratio: 2 / 1; }
+  }
+
+  /* The line drawings turn slowly as their card scrolls past, as on the home page.
+     Timeline longhands sit in a more specific rule so the minifier can't fold them into the shorthand. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      :root:not([data-a11y-motion]) .js-art :global(.orb-spin) { animation: js-turn linear both; }
+      html:root:not([data-a11y-motion]) .js-art :global(.orb-spin) { animation-timeline: view(); animation-range: cover 0% cover 100%; }
+    }
+  }
+  @keyframes js-turn { from { rotate: -24deg; scale: 0.94; } to { rotate: 24deg; scale: 1.04; } }
+  @media (forced-colors: active) { .js-card { border: 1px solid CanvasText; } }
+</style>

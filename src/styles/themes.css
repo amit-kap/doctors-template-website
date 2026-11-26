@@ -4,25 +4,6 @@
    A clinic brand colour can override --primary from site.config.ts → brand.
    ========================================================================== */
 
-/* A · Clinic — conversion one-pager. Cool, precise, calm. */
-:root[data-template='clinic'] {
-  --bg: oklch(98.6% 0.004 230);
-  --surface: oklch(100% 0 none);
-  --surface-2: oklch(95.6% 0.012 225);
-  --fg: oklch(23% 0.03 245);
-  --muted: oklch(44% 0.025 245);
-  --primary: oklch(43% 0.095 222);
-  --accent: oklch(78% 0.1 190);
-  --radius: 12px;
-  --radius-s: 8px;
-  --font-body: 'IBM Plex Sans Hebrew', system-ui, sans-serif;
-  --font-display: 'IBM Plex Sans Hebrew', system-ui, sans-serif;
-  --display-weight: 600;
-  --display-tracking: -0.015em;
-  --footer-bg: oklch(23% 0.03 245);
-  --footer-fg: oklch(96% 0.01 230);
-}
-
 /* B · Editorial — academic profile. Paper, ink, one deep accent. */
 :root[data-template='editorial'] {
   --bg: oklch(97.3% 0.011 85);
@@ -78,10 +59,7 @@
 :root[data-template='warm'] .nav-list a[aria-current='page'] { box-shadow: none; background: var(--surface-2); color: var(--fg); }
 :root[data-template='warm'] .chip { background: var(--surface); border: 1px solid var(--line); }
 
-/* Clinic: the utility bar scrolls away, the main header row stays. */
-:root[data-template='clinic'] .site-header { inset-block-start: -2.5rem; }
-
-/* D · Landing — SaaS-style conversion page. White, one confident medical blue.
+/* A · Landing — SaaS-style conversion page. White, one confident medical blue.
    Contrast (WCAG 2.x): fg/bg 17.3:1 · fg/surface-2 16.0:1 · muted/bg 7.4:1 · muted/surface-2 6.9:1 ·
    primary/bg 6.9:1 · primary/surface-2 6.4:1 · white on primary 6.9:1 · footer 15.4:1. */
 :root[data-template='landing'] {
@@ -115,10 +93,10 @@
   }
 }
 
-/* E · Journey — calm premium page: off-white, sage / lilac / pale-yellow washes, thin type, dark pill buttons.
+/* D · Journey — calm premium page: off-white, sage / lilac / pale-yellow tones, no dark panels, thin type, dark pill buttons.
    Contrast (WCAG 2.x): fg/bg 15.7:1 · muted/bg 7.2:1 · muted/sage 6.5:1 · muted/sage-2 6.1:1 · muted/lilac 6.3:1 ·
    muted/yellow 6.9:1 · white on primary 16.5:1 · primary/bg 15.3:1 · footer fg/footer bg 14.5:1.
-   Hero text sits on a darkened photo: measured worst pixel 7.6:1 for body text, 4.3:1 under the large h1. */
+   Hero text (fg) sits on a photo under a light veil of at least 54%: calculated worst case, a black pixel in the photo, 4.8:1. */
 :root[data-template='journey'] {
   --bg: #f7f6f1;
   --surface: #ffffff;
@@ -127,7 +105,6 @@
   --jr-sage-2: oklch(91.5% 0.022 160);
   --jr-lilac: oklch(93% 0.022 310);
   --jr-yellow: oklch(95.5% 0.05 100);
-  --jr-violet: oklch(21% 0.05 295);
   --fg: #1b1b1f;
   --muted: #45454d;
   --line: oklch(88% 0.008 100);
@@ -200,3 +177,42 @@
 :root[data-template='journey'] .nav-list a { border-radius: 999px; font-weight: 400; }
 :root[data-template='journey'] .nav-list a[aria-current='page'] { box-shadow: none; background: var(--jr-sage); color: var(--fg); }
 :root[data-template='journey'] .site-footer { border-block-start: 1px solid var(--line); }
+
+/* Journey primitives shared by the home and the Journey inner pages.
+   Label: a small dot + text. Latin is uppercase and tracked; Hebrew has no case, so it is a size up,
+   medium weight and untracked. */
+:root[data-template='journey'] .jh-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35em 0.7em;
+  font-family: var(--font-body);
+  font-size: var(--j-label);
+  font-weight: var(--j-w-strong);
+  letter-spacing: var(--j-tr-label);
+  line-height: 1.4;
+  color: var(--muted);
+}
+:root[data-template='journey']:lang(en) .jh-label { text-transform: uppercase; }
+:root[data-template='journey'] .jh-label::before { content: ''; flex: none; inline-size: 0.5em; block-size: 0.5em; border-radius: 50%; background: currentColor; }
+:root[data-template='journey'] .jh-pill {
+  gap: 0.6em;
+  min-block-size: 3rem;
+  padding-inline: 1.5em;
+  border-width: 1px;
+  font-size: 1rem;
+  font-weight: var(--j-w-strong);
+  white-space: normal;
+  text-align: center;
+  transition: background-color 240ms var(--j-ease), border-color 240ms var(--j-ease), transform 120ms var(--j-ease);
+}
+:root[data-template='journey'] .jh-pill-dark { background: var(--fg); color: #fff; }
+/* WhatsApp brand green. Fixed dark text (8.7:1 on the green) so it also holds in high-contrast mode. */
+:root[data-template='journey'] .jh-pill-wa { background: #25d366; border-color: #128c7e; color: #0b1f14; }
+:root[data-template='journey'] .jh-pill-line { color: var(--fg); border-color: color-mix(in oklch, var(--fg) 34%, transparent); background: transparent; }
+:root[data-template='journey'] .jh-pill svg:not(.jr-arrow) { inline-size: 1.05em; block-size: 1.05em; }
+@media (hover: hover) and (pointer: fine) {
+  :root[data-template='journey'] .jh-pill-dark:hover { background: #34343b; }
+  :root[data-template='journey'] .jh-pill-wa:hover { background: #1fbe5b; }
+  :root[data-template='journey'] .jh-pill-line:hover { background: oklch(100% 0 none / 0.7); border-color: var(--fg); }
+}

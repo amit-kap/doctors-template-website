@@ -117,7 +117,7 @@ export interface Content {
   images: Record<string, string>;
   statement: Statement;
   privacy: { title: string; updated: string; sections: { h: string; p: string[] }[] };
-  templates: Record<'clinic' | 'editorial' | 'warm' | 'landing' | 'journey', string>;
+  templates: Record<'landing' | 'editorial' | 'warm' | 'journey', string>;
   /** Texts used only by the "journey" home layout. */
   journey: {
     heroLabel: string;
@@ -138,6 +138,8 @@ export interface Content {
     pathLabel: string;
     pathTitle: string;
     pathEnd: string;
+    /** One short phase name per visit step (same order as `visit`), shown on the stepper. */
+    pathPhases: string[];
     doctorLabel: string;
     doctorWords: string;
     faqLabel: string;

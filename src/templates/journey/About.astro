@@ -1,0 +1,149 @@
+---
+/**
+ * D · JOURNEY — about page.
+ * Same language as the Journey home: one heading column and one content column per section, hairlines
+ * between sections, and a dated timeline for training and positions. No dark panels.
+ */
+import { site } from '../../site.config';
+import { latin, type Ctx } from '../../i18n';
+import Img from '../../components/Img.astro';
+import License from '../../components/License.astro';
+import JourneyCta from './Cta.astro';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+const d = t.doctor;
+const timelines = [
+  { id: 'edu', title: t.ui.credentialsTitle, items: d.education },
+  { id: 'pos', title: t.ui.positionsTitle, items: d.positions },
+];
+const lists = [
+  { id: 'mem', title: t.ui.membershipsTitle, items: d.memberships },
+  { id: 'pub', title: t.ui.publicationsTitle, items: d.publications },
+];
+---
+<section class="ja-head" aria-labelledby="ja-h1">
+  <div class="wrap ja-head-grid">
+    <div class="ja-head-text">
+      <p class="jh-label">{d.specialty}</p>
+      <h1 id="ja-h1" class="ja-h1">{d.fullName}</h1>
+      <p class="ja-statement">{d.shortBio}</p>
+      <License ctx={ctx} />
+    </div>
+    <figure class="ja-portrait">
+      <Img ctx={ctx} name={site.doctor.portrait} width={900} height={1100} eager sizes="(max-width: 56rem) 92vw, 28rem" />
+    </figure>
+  </div>
+</section>
+
+<section class="ja-sec" aria-labelledby="ja-about-h">
+  <div class="wrap ja-split">
+    <h2 id="ja-about-h" class="ja-h2">{t.ui.nav.about}</h2>
+    <div class="ja-prose">
+      {d.bio.map((p) => <p>{p}</p>)}
+      <blockquote class="ja-quote"><p>{d.philosophy}</p></blockquote>
+    </div>
+  </div>
+</section>
+
+{timelines.map((g) => (
+  <section class="ja-sec" aria-labelledby={`ja-${g.id}-h`}>
+    <div class="wrap ja-split">
+      <h2 id={`ja-${g.id}-h`} class="ja-h2">{g.title}</h2>
+      <ol class="ja-timeline" role="list">
+        {g.items.map((e) => (
+          <li>
+            <span class="ja-year"><bdi>{e.year}</bdi></span>
+            <span class="ja-dot" aria-hidden="true"></span>
+            <div class="ja-item">
+              <h3 set:html={latin(e.title, ctx.lang)} />
+              <p>{e.place}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+))}
+
+{lists.map((g) => (
+  <section class="ja-sec" aria-labelledby={`ja-${g.id}-h`}>
+    <div class="wrap ja-split">
+      <h2 id={`ja-${g.id}-h`} class="ja-h2">{g.title}</h2>
+      <ul class="ja-rows" role="list">{g.items.map((m) => <li>{m}</li>)}</ul>
+    </div>
+  </section>
+))}
+
+<section class="ja-sec" aria-labelledby="ja-lang-h">
+  <div class="wrap ja-split">
+    <h2 id="ja-lang-h" class="ja-h2">{t.ui.languagesSpoken}</h2>
+    <ul class="ja-tags" role="list">{d.languages.map((l) => <li>{l}</li>)}</ul>
+  </div>
+</section>
+
+<JourneyCta ctx={ctx} />
+
+<style>
+  /* Head: name and one statement beside the portrait */
+  .ja-head { padding-block: var(--j-sec-s); }
+  .ja-head-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-2xl) var(--j-gap); align-items: end; }
+  .ja-head-text { display: grid; gap: var(--space-l); justify-items: start; }
+  .ja-h1 { font-size: var(--j-h2); font-weight: var(--j-w-display); line-height: var(--j-lh-h2); letter-spacing: var(--j-tr-h2); }
+  .ja-statement { font-size: var(--j-statement); font-weight: var(--j-w-display); line-height: calc(var(--j-lh-h3) + 0.03); letter-spacing: var(--j-tr-h3); max-inline-size: 22em; }
+  .ja-head-text :global(.license) { display: flex; flex-wrap: wrap; gap: 0 1rem; color: var(--muted); font-size: var(--j-small); line-height: 1.5; }
+  .ja-head-text :global(.license a) { color: var(--fg); min-block-size: 2.75rem; display: inline-flex; align-items: center; text-underline-offset: 0.3em; }
+  .ja-portrait { overflow: clip; border-radius: var(--j-r-l); background: var(--jr-sage); aspect-ratio: 4 / 5; }
+  .ja-portrait :global(img) { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: 50% 12%; }
+
+  /* Sections: heading on the start edge, content on the wide column, one hairline above each */
+  .ja-sec .wrap { padding-block: var(--j-sec-s); border-block-start: 1px solid var(--j-hair); }
+  .ja-split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-l) var(--j-gap); align-items: start; }
+  .ja-h2 { font-size: var(--j-h3); font-weight: var(--j-w-strong); line-height: var(--j-lh-h3); letter-spacing: var(--j-tr-h3); }
+  .ja-prose { display: grid; gap: var(--space-m); max-inline-size: 40em; font-size: var(--j-lead); line-height: var(--j-lh-lead); }
+  .ja-prose p { color: var(--muted); }
+  .ja-quote { margin: var(--space-m) 0 0; padding: 0; border: 0; }
+  .ja-quote p { color: var(--fg); font-size: var(--j-statement); font-weight: var(--j-w-display); line-height: calc(var(--j-lh-h3) + 0.03); letter-spacing: var(--j-tr-h3); }
+
+  /* Timeline: year · stop on a rail · what and where */
+  .ja-timeline { --dot: 0.8125rem; display: grid; }
+  .ja-timeline li { position: relative; display: grid; grid-template-columns: 7.5rem var(--dot) minmax(0, 1fr); gap: 0 var(--space-l); padding-block-end: var(--space-xl); }
+  .ja-timeline li:last-child { padding-block-end: 0; }
+  .ja-timeline li:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    inset-block: calc(0.45em + var(--dot)) -0.45em;
+    inset-inline-start: calc(7.5rem + var(--space-l) + var(--dot) / 2 - 1px);
+    inline-size: 2px;
+    background: var(--j-hair);
+  }
+  .ja-year { color: var(--muted); font-variant-numeric: tabular-nums; line-height: 1.6; }
+  .ja-dot { inline-size: var(--dot); block-size: var(--dot); margin-block-start: 0.45em; border-radius: 50%; background: var(--fg); }
+  .ja-item { display: grid; gap: 0.15rem; }
+  .ja-item h3 { font-family: var(--font-body); font-size: var(--j-lead); font-weight: var(--j-w-strong); line-height: 1.4; letter-spacing: var(--j-tr-h3); }
+  .ja-item p { color: var(--muted); font-size: var(--j-small); line-height: 1.5; }
+
+  .ja-rows { display: grid; }
+  .ja-rows li { padding-block: var(--space-s); border-block-end: 1px solid var(--j-hair); font-size: var(--j-lead); line-height: 1.45; }
+  .ja-rows li:first-child { padding-block-start: 0; }
+  .ja-rows li:last-child { border-block-end: 0; padding-block-end: 0; }
+  .ja-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .ja-tags li { padding: 0.4rem 1rem; border-radius: 999px; background: var(--jr-sage); font-size: var(--j-small); font-weight: var(--j-w-strong); line-height: 1.5; }
+
+  @media (max-width: 56rem) {
+    .ja-head-grid, .ja-split { grid-template-columns: minmax(0, 1fr); }
+    .ja-portrait { order: -1; aspect-ratio: 5 / 4; }
+  }
+  @media (max-width: 34rem) {
+    .ja-timeline li { grid-template-columns: var(--dot) minmax(0, 1fr); gap: 0 var(--space-m); }
+    .ja-timeline li:not(:last-child)::before { inset-inline-start: calc(var(--dot) / 2 - 1px); }
+    .ja-year { grid-column: 2; grid-row: 1; font-size: var(--j-small); }
+    .ja-dot { grid-column: 1; grid-row: 1; }
+    .ja-item { grid-column: 2; grid-row: 2; }
+    .ja-portrait { aspect-ratio: 1; }
+  }
+  @media (forced-colors: active) {
+    .ja-dot { forced-color-adjust: none; background: CanvasText; }
+  }
+</style>

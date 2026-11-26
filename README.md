@@ -1,6 +1,6 @@
 # Doctor clinic website template
 
-A white-label website for a doctor's private clinic in Israel. Hebrew first (RTL), English second, five layouts, built to Israeli accessibility law.
+A white-label website for a doctor's private clinic in Israel. Hebrew first (RTL), English second, four layouts, built to Israeli accessibility law.
 
 ## Run it
 
@@ -9,19 +9,18 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:4321. The bar at the top switches between the five layouts (showcase mode).
+Open http://localhost:4321. The bar at the top switches between the four layouts (showcase mode).
 
-## The five layouts
+## The four layouts
 
 | | Layout | Best for | Reference |
 | --- | --- | --- | --- |
-| A | **Clinic** (`clinic`) | Booking first: quick facts, services grid, insurance, FAQ | drgrubermaayan.co.il |
+| A | **Landing** (`landing`) | Default. Booking first: book button, facts and trust bar up front | drgrubermaayan.co.il |
 | B | **Profile** (`editorial`) | Senior or academic doctors whose CV sells: serif, timeline, index | royhod.com, remermd.com |
 | C | **Family** (`warm`) | Paediatric and family practices: soft shapes, clinic access up front | katzclinic.co.il |
-| D | **Landing** (`landing`) | SaaS-style landing page: book button, facts and trust bar up front | — |
-| E | **Journey** (`journey`) | Calm premium look, soft colour washes, scroll-driven first-visit path | reference video in `ref/` |
+| D | **Journey** (`journey`) | Calm premium look, soft colour washes, scroll-driven first-visit path | reference video in `ref/` |
 
-All five share the inner pages: about, services, appointment, accessibility statement, privacy policy.
+All four share the inner pages: about, services, appointment, accessibility statement, privacy policy. Journey has its own about and services pages (`src/templates/journey/`).
 
 ## Make a site for a clinic
 
@@ -77,11 +76,11 @@ The form collects only name, phone, topic and preferred time, with a notice and 
 ```
 src/site.config.ts      one file per clinic: data, template, images
 src/content/he.ts, en.ts all text, one file per language
-src/templates/          the five home layouts
+src/templates/          the four home layouts
 src/views/              shared inner pages
 src/components/         header, footer, accessibility panel, form, …
 src/styles/base.css     reset, tokens, accessibility modes
-src/styles/themes.css   the five palettes and type
+src/styles/themes.css   the four palettes and type
 src/pages/[...path].astro  one router: page × language × template
 scripts/prelaunch-check.mjs
 ```

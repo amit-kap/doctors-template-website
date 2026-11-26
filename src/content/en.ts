@@ -275,6 +275,7 @@ const en: Content = {
     'exterior-1': 'The building where the clinic is located',
     'exterior-2': 'A city street',
     'building-tlv': 'A white Bauhaus-style building in Tel Aviv, surrounded by trees',
+    'kids-corner': 'A children’s play corner with small tables and chairs',
     'waiting-corner': 'A bright waiting corner with a table, chairs and a plant',
     'exam-otoscope': 'An otoscope for ear examinations on the examination room wall',
     'teddy-otoscope': 'A teddy bear having its ear examined with an otoscope',
@@ -387,7 +388,7 @@ const en: Content = {
     ],
   },
 
-  templates: { clinic: 'Clinical', editorial: 'Profile', warm: 'Family', landing: 'Landing', journey: 'Journey' },
+  templates: { landing: 'Landing', editorial: 'Profile', warm: 'Family', journey: 'Journey' },
 
   journey: {
     heroLabel: 'Private ENT clinic',
@@ -407,6 +408,7 @@ const en: Content = {
     pathLabel: 'Your first visit',
     pathTitle: 'Your visit, step by step',
     pathEnd: 'You can ask anything, at any stage. We will find a time that suits you.',
+    pathPhases: ['Before the visit', 'On the day', 'In the exam room', 'After the visit'],
     doctorLabel: 'The doctor',
     doctorWords: 'I want you to leave the visit knowing what I found and what the next step is.',
     faqLabel: 'Your questions, answered',

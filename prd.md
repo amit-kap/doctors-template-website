@@ -16,7 +16,7 @@ A developer or agent can launch a compliant two-language clinic site in under a 
 4. Anyone can open the accessibility panel or statement from every page.
 
 ## Included
-- Four home layouts (Clinic, Profile, Family, Landing) sharing inner pages. Landing follows SaaS landing-page structure.
+- Four home layouts (Landing, Profile, Family, Journey) sharing inner pages. Landing is the booking-first default.
 - Pages: home, about, services, appointment, accessibility statement, privacy policy, 404.
 - Hebrew (RTL, default) and English (LTR), hreflang, language switch on every page.
 - Native accessibility panel and statement generated from config.
@@ -49,4 +49,3 @@ Budget: default 4 weeks (none stated). Success: one real clinic site launched fr
 - OPEN: Who edits content after launch: the doctor (needs a CMS) or you/an agent (files are enough)?
 - OPEN: Business model: sell the template, or build sites as a service?
 - OPEN: Default form backend and booking system to integrate (e.g. Doctoronline, Calendly)?
-- OPEN: Which layout is the default for new clinics?

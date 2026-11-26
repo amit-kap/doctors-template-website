@@ -539,7 +539,13 @@ html[style*='--a11y-scale'] .header-actions .btn { white-space: normal; }
 .form-status[data-kind='success'] { background: color-mix(in oklch, oklch(55% 0.13 150) 14%, var(--surface)); }
 .form-status[data-kind='error'] { background: color-mix(in oklch, var(--error) 12%, var(--surface)); }
 
-/* Template showcase bar (only when site.showcase = true) */
+/* Template showcase bar (only when site.showcase = true).
+   The bar and the header stick to the top together, above everything else on the page. */
+.top-stack { position: sticky; inset-block-start: 0; z-index: 60; }
+.top-stack .site-header { position: relative; }
+:root:has(.top-stack) { --showcase-h: 3rem; scroll-padding-block-start: calc(6rem + var(--showcase-h)); }
+@media (max-width: 40rem) { :root:has(.top-stack) { --showcase-h: 5.75rem; } }
+@media (max-height: 32rem) { .top-stack { position: static; } }
 .showcase-bar {
   display: flex;
   flex-wrap: wrap;
@@ -585,7 +591,6 @@ html[data-a11y-contrast] *:not(img) { background-image: none !important; }
 html[data-a11y-contrast] .fab-contact a { color: black; border: 2px solid white; }
 html[data-a11y-contrast] .fab-contact .fab-wa { background: white; }
 html[data-a11y-contrast] .showcase-bar a[aria-current='true'] { color: black; }
-html[data-a11y-contrast] .utility { background: black; color: white; border-block-end: 1px solid white; }
 html[data-a11y-contrast] .btn-outline, html[data-a11y-contrast] .btn-quiet { border-color: white; color: white; background: black; }
 html[data-a11y-contrast] .card, html[data-a11y-contrast] .svc-card, html[data-a11y-contrast] .tile { border: 1px solid white; }
 html[data-a11y-contrast] .site-footer { border-block-start: 2px solid white; }

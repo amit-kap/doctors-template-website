@@ -52,8 +52,12 @@ const canonical = new URL(href({ ...ctx, prefix: '' }, ctx.page), site.url).href
   </head>
   <body>
     <a class="skip-link" href="#main">{t.ui.skipToContent}</a>
-    {site.showcase && <ShowcaseBar ctx={ctx} />}
-    <Header ctx={ctx} />
+    {site.showcase ? (
+      <div class="top-stack">
+        <ShowcaseBar ctx={ctx} />
+        <Header ctx={ctx} />
+      </div>
+    ) : <Header ctx={ctx} />}
     <main id="main" tabindex="-1">
       <slot />
     </main>

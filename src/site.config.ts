@@ -6,15 +6,15 @@
  * - Everything marked PLACEHOLDER must be replaced before going live.
  */
 
-export type TemplateId = 'clinic' | 'editorial' | 'warm' | 'landing' | 'journey';
+export type TemplateId = 'landing' | 'editorial' | 'warm' | 'journey';
 export type Lang = 'he' | 'en';
 
 export const site = {
-  /** Which of the three layouts this clinic uses. */
-  template: 'clinic' as TemplateId,
+  /** Which of the four layouts this clinic uses. */
+  template: 'landing' as TemplateId,
 
   /**
-   * Showcase mode builds all three templates side by side under /t/<template>/
+   * Showcase mode builds all four templates side by side under /t/<template>/
    * and shows a small template switcher. Turn OFF for a real clinic.
    */
   showcase: true,
@@ -101,6 +101,7 @@ export const site = {
     'exterior-1': { src: 'https://images.unsplash.com/photo-1657314136565-f40eab6464c4?w=1600&q=80&auto=format&fit=crop', credit: 'Marat Badykov / Unsplash', page: 'https://unsplash.com/photos/I3mSCfG7AEg' },
     'exterior-2': { src: 'https://images.unsplash.com/photo-1672575770678-a1f806a19714?w=1600&q=80&auto=format&fit=crop', credit: 'Nils Adam / Unsplash', page: 'https://unsplash.com/photos/USSZb0BI9a0' },
     'building-tlv': { src: 'https://images.unsplash.com/photo-1553323122-6c81666fc9d2?w=1600&q=80&auto=format&fit=crop', credit: 'Anders J / Unsplash', page: 'https://unsplash.com/photos/7w4Zl66nlSY' },
+    'kids-corner': { src: 'https://images.unsplash.com/photo-1763310225230-6e15b125935a?w=2000&q=75&auto=format&fit=crop', credit: 'Camila Mofsovich / Unsplash', page: 'https://unsplash.com/photos/7Lbw1Dxwj3Y' },
     'waiting-corner': { src: 'https://images.unsplash.com/photo-1633132638592-2202c9666d95?w=1200&q=80&auto=format&fit=crop', credit: 'veronika ko / Unsplash', page: 'https://unsplash.com/photos/mph7m0dC6v0' },
     'exam-otoscope': { src: 'https://images.unsplash.com/photo-1576085898419-d54e840d898f?w=1200&q=80&auto=format&fit=crop', credit: 'charlesdeluvio / Unsplash', page: 'https://unsplash.com/photos/2is2GQovngg' },
     'teddy-otoscope': { src: 'https://images.unsplash.com/photo-1763294905880-6caf7e585241?w=1600&q=80&auto=format&fit=crop', credit: 'Pauli Nie / Unsplash', page: 'https://unsplash.com/photos/nlj0xvTlk0s' },
