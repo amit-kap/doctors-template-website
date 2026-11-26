@@ -1,0 +1,131 @@
+---
+/**
+ * D · JOURNEY — appointment page.
+ * Head with the three direct ways to reach the clinic, then the request form beside address and hours,
+ * then the questions people ask before booking. No closing panel: this page is where that panel leads.
+ */
+import { site } from '../../site.config';
+import { bookLink, whatsappHref, mapsHref, wazeHref, type Ctx } from '../../i18n';
+import AppointmentForm from '../../components/AppointmentForm.astro';
+import Faq from '../../components/Faq.astro';
+import Hours from '../../components/Hours.astro';
+import OpenNow from '../../components/OpenNow.astro';
+import Icon from '../../components/Icon.astro';
+import Arrow from './Arrow.astro';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t } = ctx;
+const a = t.appointment;
+const book = bookLink(ctx);
+const wa = whatsappHref();
+---
+<section class="jp-head" aria-labelledby="jp-h1">
+  <div class="wrap jp-head-in">
+    <p class="jh-label">{t.doctor.specialty}</p>
+    <h1 id="jp-h1" class="jp-h1">{a.title}</h1>
+    <p class="jp-lead">{a.intro}</p>
+    <div class="jp-pills">
+      <a class="btn jh-pill jh-pill-line" href={`tel:${site.contact.phoneHref}`}>
+        <Icon name="phone" /><span class="visually-hidden">{t.ui.callFull}: </span><span dir="ltr">{site.contact.phone}</span>
+      </a>
+      {wa && (
+        <a class="btn jh-pill jh-pill-wa" href={wa} target="_blank" rel="noopener">
+          <Icon name="whatsapp" />{t.ui.whatsapp}<span class="visually-hidden"> {t.ui.newWindow}</span>
+        </a>
+      )}
+      <a class="btn jh-pill jh-pill-line" href={`mailto:${site.contact.email}`}>
+        <Icon name="mail" /><span class="visually-hidden">{t.ui.email}: </span><span dir="ltr">{site.contact.email}</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="jp-sec" aria-label={a.formTitle}>
+  <div class="wrap jp-grid">
+    <div class="jp-form">
+      {book.external ? (
+        <div class="jp-ext">
+          <h2>{a.externalTitle}</h2>
+          <a class="btn jh-pill jh-pill-dark" href={book.href} target="_blank" rel="noopener">
+            {a.externalText}<Arrow /><span class="visually-hidden"> {t.ui.newWindow}</span>
+          </a>
+        </div>
+      ) : <AppointmentForm ctx={ctx} />}
+    </div>
+    <div class="jp-side">
+      <div class="jp-entry">
+        <h2>{t.ui.address}</h2>
+        <p class="jp-big">{t.address.street}, {t.address.city}</p>
+        <p class="jp-muted">{t.address.notes}</p>
+        <div class="jp-pills">
+          <a class="btn jh-pill jh-pill-dark" href={wazeHref()} target="_blank" rel="noopener">{t.ui.openWaze}<Arrow /><span class="visually-hidden"> {t.ui.newWindow}</span></a>
+          <a class="btn jh-pill jh-pill-line" href={mapsHref()} target="_blank" rel="noopener">{t.ui.openMaps}<Arrow /><span class="visually-hidden"> {t.ui.newWindow}</span></a>
+        </div>
+      </div>
+      <div class="jp-entry">
+        <h2>{t.ui.hours}</h2>
+        <OpenNow ctx={ctx} class="jp-open" />
+        <Hours ctx={ctx} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="jp-sec jp-faq" aria-labelledby="jp-faq-h">
+  <div class="wrap jp-split">
+    <h2 id="jp-faq-h" class="jp-h2">{t.ui.faqTitle}</h2>
+    <Faq ctx={ctx} />
+  </div>
+</section>
+
+<style>
+  .jp-head { padding-block: var(--j-sec-s); }
+  .jp-head-in { display: grid; gap: var(--space-l); justify-items: start; }
+  .jp-h1 { font-size: var(--j-h2); font-weight: var(--j-w-display); line-height: var(--j-lh-h2); letter-spacing: var(--j-tr-h2); }
+  .jp-lead { max-inline-size: 34em; color: var(--muted); font-size: var(--j-lead); line-height: var(--j-lh-lead); }
+  .jp-pills { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+
+  .jp-sec .wrap { padding-block: var(--j-sec-s); border-block-start: 1px solid var(--j-hair); }
+  .jp-faq .wrap { padding-block-end: var(--j-sec); }
+
+  .jp-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-xl) var(--j-gap); align-items: start; }
+  .jp-form { padding: clamp(1.25rem, 0.75rem + 2.5vw, 3rem); border: 1px solid var(--j-hair); border-radius: var(--j-r-l); background: var(--surface); }
+  .jp-form :global(.appt-title), .jp-ext h2 { font-size: var(--j-h3); font-weight: var(--j-w-strong); line-height: var(--j-lh-h3); letter-spacing: var(--j-tr-h3); }
+  .jp-form :global(.field label) { font-weight: var(--j-w-strong); }
+  .jp-form :global(.appt-notice) { border-radius: var(--j-r-m); background: var(--jr-sage); color: var(--fg); }
+  .jp-form :global(.appt-submit) { border-radius: 999px; background: var(--fg); color: #fff; }
+  .jp-ext { display: grid; gap: var(--space-l); justify-items: start; }
+
+  .jp-side { display: grid; border-block-end: 1px solid var(--j-hair); }
+  .jp-entry { display: grid; gap: var(--space-s); justify-items: start; padding-block: clamp(1.5rem, 1.1rem + 1.2vw, 2.25rem); border-block-start: 1px solid var(--j-hair); }
+  .jp-entry:first-child { padding-block-start: 0; border-block-start: 0; }
+  .jp-entry h2 { font-family: var(--font-body); font-size: var(--j-body); font-weight: var(--j-w-strong); letter-spacing: 0; line-height: 1.5; }
+  .jp-big { font-size: var(--j-h3); font-weight: var(--j-w-strong); line-height: var(--j-lh-h3); letter-spacing: var(--j-tr-h3); }
+  .jp-muted { color: var(--muted); }
+  .jp-entry .jp-pills { margin-block-start: var(--space-xs); }
+  .jp-entry :global(.jp-open) { display: flex; align-items: center; gap: 0.5em; margin: 0; font-size: var(--j-lead); font-weight: var(--j-w-strong); line-height: 1.4; }
+  .jp-entry :global(.hours) { inline-size: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .jp-entry :global(.hours th), .jp-entry :global(.hours td) { padding-block: 0.5rem; border-block-end: 1px solid var(--j-hair); text-align: start; font-weight: 400; }
+  .jp-entry :global(.hours td) { text-align: end; }
+  .jp-entry :global(.hours tr:last-child th), .jp-entry :global(.hours tr:last-child td) { border-block-end: 0; padding-block-end: 0; }
+  .jp-entry :global(.hours tr[data-today]), .jp-entry :global(.hours tr[data-today] th) { font-weight: 600; }
+
+  .jp-split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-l) var(--j-gap); align-items: start; }
+  .jp-h2 { font-size: var(--j-h3); font-weight: var(--j-w-strong); line-height: var(--j-lh-h3); letter-spacing: var(--j-tr-h3); }
+  .jp-faq :global(.faq) { display: grid; gap: var(--space-xs); }
+  .jp-faq :global(.faq details) { border: 1px solid var(--j-hair); border-radius: var(--j-r-m); background: var(--surface); }
+  .jp-faq :global(.faq summary) { overflow-wrap: anywhere; min-block-size: 4rem; padding: 0.9rem 1.5rem; padding-inline-end: 1rem; font-size: var(--j-lead); font-weight: var(--j-w-strong); line-height: 1.4; letter-spacing: var(--j-tr-h3); }
+  .jp-faq :global(.faq summary svg) { inline-size: 2.25rem; block-size: 2.25rem; padding: 0.55rem; border-radius: 50%; background: var(--fg); color: #fff; }
+  .jp-faq :global(.faq-a) { padding-inline: 1.5rem; padding-block-end: 1.5rem; color: var(--muted); max-inline-size: 38em; }
+
+  @media (max-width: 56rem) {
+    .jp-grid, .jp-split { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 34rem) {
+    .jp-pills { display: grid; inline-size: 100%; }
+    .jp-pills .btn { inline-size: 100%; }
+    .jp-form :global(.appt-submit) { inline-size: 100%; }
+  }
+  @media (forced-colors: active) { .jp-form, .jp-faq :global(.faq details) { border: 1px solid CanvasText; } }
+</style>

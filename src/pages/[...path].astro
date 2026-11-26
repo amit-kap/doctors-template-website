@@ -15,6 +15,7 @@ import JourneyHome from '../templates/JourneyHome.astro';
 import About from '../views/About.astro';
 import JourneyAbout from '../templates/journey/About.astro';
 import JourneyServices from '../templates/journey/Services.astro';
+import JourneyAppointment from '../templates/journey/Appointment.astro';
 import Services from '../views/Services.astro';
 import Appointment from '../views/Appointment.astro';
 import Accessibility from '../views/Accessibility.astro';
@@ -51,7 +52,7 @@ const titles: Record<PageId, string | undefined> = {
   {page === 'home' && <Home ctx={ctx} />}
   {page === 'about' && (template === 'journey' ? <JourneyAbout ctx={ctx} /> : <About ctx={ctx} />)}
   {page === 'services' && (template === 'journey' ? <JourneyServices ctx={ctx} /> : <Services ctx={ctx} />)}
-  {page === 'appointment' && <Appointment ctx={ctx} />}
+  {page === 'appointment' && (template === 'journey' ? <JourneyAppointment ctx={ctx} /> : <Appointment ctx={ctx} />)}
   {page === 'accessibility' && <Accessibility ctx={ctx} />}
   {page === 'privacy' && <Privacy ctx={ctx} />}
 </Base>

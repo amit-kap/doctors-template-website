@@ -20,7 +20,7 @@ Open http://localhost:4321. The bar at the top switches between the four layouts
 | C | **Family** (`warm`) | Paediatric and family practices: soft shapes, clinic access up front | katzclinic.co.il |
 | D | **Journey** (`journey`) | Calm premium look, soft colour washes, scroll-driven first-visit path | reference video in `ref/` |
 
-All four share the inner pages: about, services, appointment, accessibility statement, privacy policy. Journey has its own about and services pages (`src/templates/journey/`).
+All four share the inner pages: about, services, appointment, accessibility statement, privacy policy. Journey has its own about, services and appointment pages (`src/templates/journey/`).
 
 ## Make a site for a clinic
 
